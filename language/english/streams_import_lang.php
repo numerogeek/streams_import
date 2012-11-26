@@ -1,33 +1,33 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 $lang = array(
 	//Title
-'streams_import:title:profiles:index'						=>		'Profils',
-'streams_import:title:profiles:create'						=>		'Creation d\'un contact',
-'streams_import:title:profiles:edit'						=>		'Edition d\'un contact',
+'streams_import:title:profiles:index'						=>		'Profiles',
+'streams_import:title:profiles:create'						=>		'Create a new profile',
+'streams_import:title:profiles:edit'						=>		'Edit the profile',
 
 //Message
 
-'streams_import:messages:profiles:create:success'			 => 'Nouveau contact créé avec succès.',
-'streams_import:messages:profiles:create:failure'			 => 'Echec dans la création du contact.',
-'streams_import:messages:profiles:edit:success'				 => 'Contact édité avec succès.',
-'streams_import:messages:profiles:edit:failure'				 => 'Echec dans l\'édition du contact.',
-'streams_import:messages:profiles:delete:success'			 => 'Contact supprimé avec succès.',
-'streams_import:messages:profiles:delete:failure'			 => 'Echec dans la suppression du contact.',
+'streams_import:messages:profiles:create:success'			 => 'New profile created with success.',
+'streams_import:messages:profiles:create:failure'			 => 'Fail in creation of the profile.',
+'streams_import:messages:profiles:edit:success'				 => 'Profile edited with success',
+'streams_import:messages:profiles:edit:failure'				 => 'Fail in editing the profile',
+'streams_import:messages:profiles:delete:success'			 => 'Profile deleted with success',
+'streams_import:messages:profiles:delete:failure'			 => 'Fail in deleting the profile',
 
 
 //Fields
 	//customer
-'streams_import:fields:profile_name'						=>		'Nom du profil',
+'streams_import:fields:profile_name'						=>		'Profile Name',
 'streams_import:fields:profile'								=>		'Profil ID',
-'streams_import:fields:entry_number'						=>		'Entrée',
+'streams_import:fields:entry_number'						=>		'Entry',
 'streams_import:fields:stream_field_id'						=>		'Stream Field ID',
 'streams_import:fields:equalities'							=>		'Associations',
 'streams_import:fields:stream_identifier'					=>		'stream ID',
-'streams_import:fields:eol'									=>		'Fin de ligne',
-'streams_import:fields:delimiter'							=>		'Delimiteur',
+'streams_import:fields:eol'									=>		'EOL',
+'streams_import:fields:delimiter'							=>		'Delimiter',
 
 
 //button
-'profiles:button:add'										=>		'Ajouter un profil',
+'profiles:button:add'										=>		'add a profile',
 		
 	);
