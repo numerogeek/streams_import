@@ -43,6 +43,26 @@ class Module_Streams_import extends Module {
 		$this->load->driver('Streams');
 		$this->load->library('files/files');
 
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Make the Uploads folder and store its ID in the settings table
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if(($folder = Files::create_folder(0, $this->module_name))==true)
+		{
+			$folder_id = $folder['data']['id'];
+			$this->db->insert('settings', array(
+				'slug'			=> $this->module_name.'_folder',
+				'title'			=> $this->module_name.' Folder',
+				'description'	=> 'A '.$this->module_name.' Folder ID Holder',
+				'`default`'		=> '0',
+				'`value`'		=> $folder_id,
+				'type'			=> 'text',
+				'`options`'		=> '',
+				'is_required'	=> 1,
+				'is_gui'		=> 0,
+				'module'		=> $this->module_name
+			));
+		}
+
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Add Streams - profiles
@@ -98,6 +118,7 @@ class Module_Streams_import extends Module {
 				'slug'				=> $field_slug,
 				'namespace'			=> $this->module_name,
 				'type'				=> 'file',
+				'extra'				=> array('folder' => $folder_id ),
 				'assign'			=> $stream_slug,
 				'title_column'		=> false,
 				'required'			=> true,
@@ -120,6 +141,7 @@ class Module_Streams_import extends Module {
 				'assign'			=> $stream_slug,
 				'title_column'		=> false,
 				'required'			=> false,
+				'instructions'		=> 'lang:'.$this->module_name.':fields:'.$field_slug.':instructions',
 				'unique'			=> false
 			);
 			$this->streams->fields->add_field($field);
