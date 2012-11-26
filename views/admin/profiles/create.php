@@ -1,37 +1,40 @@
-<?php echo form_open_multipart(uri_string(), 'class="streams_form"');
 
-var_dump($form); ?>
-
-Ok
-
-<!--
-
+<section class="item">
+<?php echo form_open_multipart(uri_string(), ''); 
+?>
 <div class="form_inputs">
 
 	<ul>
-
-	<?php foreach( $fields as $field ) { ?>
-
 		<li>
-			<label for="<?php echo $field['input_slug'];?>"><?php echo $this->fields->translate_label($field['input_title']);?> <?php echo $field['required'];?>
-			
-			<?php if( $field['instructions'] != '' ): ?>
-				<br /><small><?php echo $this->fields->translate_label($field['instructions']); ?></small>
-			<?php endif; ?>
-			</label>
-			
-			<div class="input"><?php echo $field['input']; ?></div>
+			<label for="<?php echo $fields->profile_name->field_slug;?>"> <?php echo $this->fields->translate_label( $fields->profile_name->field_name); ?></label>
+			<div class="input"><?php echo $this->fields->build_form_input($fields->profile_name); ?></div>
 		</li>
-
-	<?php } ?>
-	
-	</ul>	
-
+		<li>
+			<label for="<?php echo $fields->example_file->field_slug;?>"> <?php echo $this->fields->translate_label( $fields->example_file->field_name); ?></label>
+			<div class="input"><?php echo $this->fields->build_form_input($fields->example_file); ?></div>
+		</li>
+		<li>
+			<label for="<?php echo $fields->delimiter->field_slug;?>"> <?php echo $this->fields->translate_label( $fields->delimiter->field_name); ?></label>
+			<div class="input"><?php echo $this->fields->build_form_input($fields->delimiter); ?></div>
+		</li>
+		<li>
+			<label for="<?php echo $fields->eol->field_slug;?>"> <?php echo $this->fields->translate_label( $fields->eol->field_name); ?></label>
+			<div class="input"><?php echo $this->fields->build_form_input($fields->eol); ?></div>
+		</li>
+		<li>
+			<label for="<?php echo $fields->stream_identifier->field_slug;?>"> <?php echo $this->fields->translate_label( $fields->stream_identifier->field_name); ?></label>
+			<div class="input"><?php echo form_dropdown('streams', $stream_dropdown); ?></div>
+		</li>
+	</ul>
 </div>
+
+		
+
 
 	<div class="float-right buttons">
 		<button type="submit" name="btnAction" value="save" class="btn blue"><span><?php echo lang('buttons.save'); ?></span></button>	
 		
 	</div>
 
-<?php echo form_close();?>-->
+<?php echo form_close();?>
+</section>

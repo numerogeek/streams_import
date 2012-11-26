@@ -40,34 +40,18 @@ class Admin_profiles extends Admin_Controller
 
      public function create()
     {
-    /*    // Get stream
+        // Get stream
         $stream = $this->streams->stream_obj($this->stream_slug, $this->namespace);
-        $stream_fields = $this->streams_m->get_stream_fields($stream->id);
+        $data->fields = $this->streams_m->get_stream_fields($stream->id);
 
-        $data->fields=    $this->fields->build_form($stream, 'new', null, false, false, null,null, null);
-        var_dump($data->fields);
-        die();
-        $this->template->build('admin/profiles/create',$data);*/
-      /*  if ( ! $stream) $this->log_error('invalid_stream', 'entries_table');
+        $stream_list =$this->db->select("id, stream_namespace, stream_slug")->get('data_streams')->result();
+        foreach ($stream_list as $single_stream) {
+                $data->stream_dropdown[$single_stream->id] = $single_stream->stream_namespace.' - '.$single_stream->stream_slug;
+                # code...
+            }
 
-        // -------------------------------------
-        // Get Header Fields
-        // -------------------------------------
-        
-        $stream_fields = $CI->streams_m->get_stream_fields($stream->id);*/
-
-
-
-        $extra = array('title' =>  lang($this->namespace.':title:'.$this->section.':edit'),
-        'success_message' => lang($this->namespace.':messages:'.$this->section.':edit:success'),
-        'failure_message' => lang($this->namespace.':messages:'.$this->section.':edit:error'),
-        'return'          => 'admin/'.$this->namespace.'/'.$this->section   );
-
-       $data->form =   $this->streams->cp->entry_form($this->section, $this->namespace, $mode = 'new', $entry = null, $view_override = false, $extra, $skips = array());
-        
-        
-       $this->template->build('admin/profiles/create',$data);
-
+        $this->template->build('admin/profiles/create',$data);
+      
     }
 
     public function edit($id)
@@ -91,7 +75,7 @@ class Admin_profiles extends Admin_Controller
             $this->session->set_flashdata('error', lang($this->namespace.':messages:'.$this->section.':failure:delete'));
         }
         redirect('admin/'.$this->namespace.'/'.$this->section);
-        
+
     }
 
 

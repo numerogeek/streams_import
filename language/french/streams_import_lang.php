@@ -25,6 +25,8 @@ $lang = array(
 'streams_import:fields:stream_identifier'					=>		'stream ID',
 'streams_import:fields:eol'									=>		'Fin de ligne',
 'streams_import:fields:delimiter'							=>		'Delimiteur',
+'streams_import:fields:example_file'						=>		'Example File',
+
 
 
 //button
