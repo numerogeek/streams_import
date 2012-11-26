@@ -40,6 +40,19 @@ class Admin_profiles extends Admin_Controller
 
      public function create()
     {
+       $secure_post = $this->input->post();
+       var_dump($secure_post);
+      /*  $entry_data= array(
+            'profile_name' =  ,
+            'example_file' = ,
+            'delimiter' = ,
+            'eol' = ,
+            'stream_identifier' = ,
+
+            );
+        $this->streams->entries->insert_entry($entry_data, $this->stream_slug, $namespace, $skips = array(), $extra = array());*/
+
+
         // Get stream
         $stream = $this->streams->stream_obj($this->stream_slug, $this->namespace);
         $data->fields = $this->streams_m->get_stream_fields($stream->id);
@@ -50,6 +63,8 @@ class Admin_profiles extends Admin_Controller
                 # code...
             }
 
+       // $this->streams->cp->entry_form($this->section, $this->namespace, $mode = 'new', null, $view_override = false, array(), $skips = array());
+ 
         $this->template->build('admin/profiles/create',$data);
       
     }
