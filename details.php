@@ -165,6 +165,24 @@ class Module_Streams_import extends Module {
 			);
 			$this->streams->fields->add_field($field);
 		}	
+		$field_slug = "enclosure";
+		if($this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows()==null)
+		{
+			$field = array(
+				'name'				=> 'lang:'.$this->module_name.':fields:'.$field_slug,
+				'slug'				=> $field_slug,
+				'namespace'			=> $this->module_name,
+				'type'				=> 'text',
+				'extra'				=> array(
+					'max_length'		=> 5
+				),
+				'assign'			=> $stream_slug,
+				'title_column'		=> false,
+				'required'			=> false,
+				'unique'			=> false
+			);
+			$this->streams->fields->add_field($field);
+		}	
 
 		$field_slug = "stream_identifier";
 		if($this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows()==null)

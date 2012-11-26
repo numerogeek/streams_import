@@ -22,6 +22,10 @@
 			<div class="input"><?php echo $this->fields->build_form_input($fields->eol); ?></div>
 		</li>
 		<li>
+			<label for="<?php echo $fields->enclosure->field_slug;?>"> <?php echo $this->fields->translate_label( $fields->enclosure->field_name); ?></label>
+			<div class="input"><?php echo $this->fields->build_form_input($fields->enclosure); ?></div>
+		</li>
+		<li>
 			<label for="<?php echo $fields->stream_identifier->field_slug;?>"> <?php echo $this->fields->translate_label( $fields->stream_identifier->field_name); ?></label>
 			<div class="input"><?php echo form_dropdown($fields->stream_identifier->field_slug, $stream_dropdown); ?></div>
 		</li>

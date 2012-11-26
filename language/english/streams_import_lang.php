@@ -26,6 +26,7 @@ $lang = array(
 'streams_import:fields:eol'									=>		'EOL',
 'streams_import:fields:delimiter'							=>		'Delimiter',
 'streams_import:fields:example_file'						=>		'Example File',
+'streams_import:fields:enclosure'							=>		'enclosure',
 'streams_import:fields:delimiter:instructions'				=>		'',
 
 

@@ -73,7 +73,7 @@ class Admin_profiles extends Admin_Controller
         $stream = $this->streams->stream_obj($this->stream_slug, $this->namespace);
         $data->fields = $this->streams_m->get_stream_fields($current_profile['stream_identifier']);
 
-        $data->field_count = count($data->fields);
+        $data->field_count = count((array)$data->fields);
 
         //Feed the field dropdown
         foreach ($data->fields as $field) {
@@ -82,7 +82,14 @@ class Admin_profiles extends Admin_Controller
         
 
         //Feed the entry dropdown
-        $file_content = _pre_import_plain($current_profile['example_file']['file'],$current_profile['delimiter'],$current_profile['eol']);
+       // $file_content = _pre_import_plain($current_profile['example_file']['file'],$current_profile['delimiter'],$current_profile['eol']);
+         //$handle = fopen($current_profile['example_file']['file'], 'r');
+         //$handle=stream_get_contents($handle);
+         $file_content =  _pre_import_csv_to_stream($current_profile['example_file']['file'], $current_profile['delimiter'], $current_profile['eol'], $current_profile['enclosure']) ;
+
+         $data->csv_dropdown = $file_content['entries'][0];
+
+        $this->template->build('admin/profiles/mapping',$data); 
 
 
         var_dump( $file_content);
