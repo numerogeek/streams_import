@@ -15,6 +15,9 @@ $lang = array(
 'streams_import:messages:profiles:delete:failure'			 => 'Echec dans la suppression du profil.',
 
 
+'streams_import:messages:mapping:save:success'				 => 'Mapping sauvegardé',
+'streams_import:messages:mapping:save:failure'				 => 'Echec du mapping',
+
 //Fields
 	//customer
 'streams_import:fields:profile_name'						=>		'Nom du profil',
@@ -27,10 +30,27 @@ $lang = array(
 'streams_import:fields:delimiter'							=>		'Delimiteur',
 'streams_import:fields:delimiter:instructions'				=>		'',
 'streams_import:fields:example_file'						=>		'Example File',
+'streams_import:fields:enclosure'							=>		'enclosure',
+'streams_import:fields:delimiter:instructions'				=>		'',
+'streams_import:fields:namespace_stream_slug'				=>		'Concerned Namespace/Streams Slug',
 
 
 
 //button
 'profiles:button:add'										=>		'Ajouter un profil',
-		
+'streams_import:button:edit-mapping'						=>		'Editer le mapping',
+'streams_import:button:cancel'								=>		'Annuler',
+'streams_import:button:save'								=>		'Sauvegarder'
+'streams_import:button:run'									=>		'Executer',
+'streams_import:button_next'								=>		'Suivant';
+
+
+
+'streams_import:title_import_csv'							=>		'Importer un fichier';
+'streams_import:misc_example_csv'							=>		'Un fichier XML / TXT ou XML';
+'streams_import:misc_csv_file'								=>		'misc';
+'streams_import:misc_instructions_csv_file'					=>		'instructions';
+	
+
+
 	);	

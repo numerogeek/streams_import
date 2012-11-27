@@ -204,7 +204,7 @@ class Module_Streams_import extends Module {
 		// Add Streams - equalities
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		$stream_slug = "equalities";
+		$stream_slug = "mapping";
 		if($this->streams->streams->add_stream('lang:'. $this->module_name.':title:'.$stream_slug,	$stream_slug,	 $this->module_name,	$this->module_name.'_',	null)==true)
 		{
 			$stream_id = $this->db->where('stream_namespace', $this->module_name)->where('stream_slug', $stream_slug)->limit(1)->get('data_streams')->row()->id;
@@ -259,7 +259,7 @@ class Module_Streams_import extends Module {
 			$this->streams->fields->add_field($field);
 		}	
 
-		$field_slug = "profile";
+		$field_slug = "profile_relation_stream";
 		if($this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows()==null)
 		{
 			$field = array(
@@ -269,12 +269,14 @@ class Module_Streams_import extends Module {
 				'type'				=> 'relationship',
 				'extra'				=> array(
 					'choose_stream' => Settings::get('sim_profiles_stream_id')),
-				'title_column'		=> true,
+				'title_column'		=> false,
+				'assign'			=> $stream_slug,
 				'required'			=> true,
 				'unique'			=> false
 			);
 			$this->streams->fields->add_field($field);
 		}	
+		else die('error');
 
 		return true;	
 	}
@@ -282,11 +284,12 @@ class Module_Streams_import extends Module {
 	public function uninstall()
 	{
 		$this->load->driver('Streams');
+		$this->load->library('files/files');
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Delete the Uploads folder and remove its ID in the settings table
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
+			Files::delete_folder(Settings::get($this->module_name.'_folder'))	;
 			$this->db->delete('settings', array('module' => $this->module_name));
 				
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

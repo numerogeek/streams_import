@@ -7,13 +7,16 @@ $lang = array(
 
 //Message
 
-'streams_import:messages:profiles:create:success'			 => 'New profile created with success.',
-'streams_import:messages:profiles:create:failure'			 => 'Fail in creation of the profile.',
-'streams_import:messages:profiles:edit:success'				 => 'Profile edited with success',
-'streams_import:messages:profiles:edit:failure'				 => 'Fail in editing the profile',
-'streams_import:messages:profiles:delete:success'			 => 'Profile deleted with success',
-'streams_import:messages:profiles:delete:failure'			 => 'Fail in deleting the profile',
+'streams_import:messages:profiles:create:success'			 => 	'New profile created with success.',
+'streams_import:messages:profiles:create:failure'			 => 	'Fail in creation of the profile.',
+'streams_import:messages:profiles:edit:success'				 => 	'Profile edited with success',
+'streams_import:messages:profiles:edit:failure'				 => 	'Fail in editing the profile',
+'streams_import:messages:profiles:delete:success'			 => 	'Profile deleted with success',
+'streams_import:messages:profiles:delete:failure'			 => 	'Fail in deleting the profile',
 
+
+'streams_import:messages:mapping:save:success'				 => 	'Mapping saved',
+'streams_import:messages:mapping:save:failure'				 =>     'Mapping Failed',
 
 //Fields
 	//customer
@@ -25,13 +28,27 @@ $lang = array(
 'streams_import:fields:stream_identifier'					=>		'stream ID',
 'streams_import:fields:eol'									=>		'EOL',
 'streams_import:fields:delimiter'							=>		'Delimiter',
+'streams_import:fields:delimiter:instructions'				=>		'',
 'streams_import:fields:example_file'						=>		'Example File',
 'streams_import:fields:enclosure'							=>		'enclosure',
 'streams_import:fields:delimiter:instructions'				=>		'',
+'streams_import:fields:namespace_stream_slug'				=>		'Concerned Namespace/Streams Slug',
 
 
 
 //button
-'profiles:button:add'										=>		'add a profile',
+'profiles:button:add'										=>		'Add a profile',
+'streams_import:button:edit-mapping'						=>		'Edit mapping',
+'streams_import:button:cancel'								=>		'Cancel',
+'streams_import:button:save'								=>		'Save',
+'streams_import:button:run'									=>		'Run !',
+'streams_import:button_next'								=>		'Next',
+
+
+
+'streams_import:title_import_csv'							=>		'Run import.',
+'streams_import:misc_example_csv'							=>		'Choose a file and click next.  (XML / TXT or XML)',
+'streams_import:misc_csv_file'								=>		'Pick a file',
+'streams_import:misc_instructions_csv_file'					=>		'or upload one using Files Manager.',
 		
 	);
