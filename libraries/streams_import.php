@@ -34,11 +34,12 @@ class Streams_import
             'namespace' => 'streams_import',
             'where'        => " id = ".$profile_id
         );
-         $profile = $this->streams->entries->get_entries($params);	 
+         $entries = $this->ci->streams->entries->get_entries($params);
+         $profile=$entries['entries'][0];	 
 
          
 
-		 $data = _pre_import_csv_to_stream($file->path,$delimiter,$eol=false,$enclosure=null); //helper        
+		 $data = _pre_import_csv_to_stream($file->path,$profile['delimiter'],$profile['eol'],$profile['enclosure']); //helper        
 
 
 
@@ -49,22 +50,36 @@ class Streams_import
             'namespace' => 'streams_import',
             'where'        => " profile_relation_stream = ".$profile_id
         );
-         $mapping = $this->streams->entries->get_entries($params);
+         $mapping = $this->ci->streams->entries->get_entries($params);
 
          //get the fields
-        // $stream = $ci->streams->stream_obj();
-         $data->fields = $ci->streams_m->get_stream_fields($profile['entries'][0]['stream_identifier']);
-
-		// get the file entries
-
-
-
-		//batch the insert
+         $stream = $this->ci->streams->stream_obj($profile['stream_identifier']);
+         $fields = $this->ci->streams_m->get_stream_fields($profile['stream_identifier']);
+         //prepare the array.
+         foreach ($fields as $field) {
+            $formated_fields[$field->field_id] = $field->field_slug;
+         }
 
 
-		//run the insert
+        $total = count($data['entries']);
+        // Build the batch
+        foreach ( $data['entries'] as $entry )
+        {
+            // Add..
+            $insert_data = array(
+                'created' => date('Y-m-d H:i:s'),
+                'created_by' =>  $this->ci->current_user->id,
+                'ordering_count' => 0
+                );
+            foreach ($mapping['entries'] as $map) {
 
-		//go away
+                $insert_data[$formated_fields[$map['stream_field_id']]] =$entry[$map['entry_number']];                
+            }
+            $batch[] = $insert_data ;
+
+        }
+       // Import them
+       return batch_insert_update($stream->stream_prefix.$stream->stream_slug, $batch, array('ordering_count'));     
 
 	}
 }

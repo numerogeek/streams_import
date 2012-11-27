@@ -13,6 +13,8 @@ $lang = array(
 'streams_import:messages:profiles:edit:failure'				 => 	'Fail in editing the profile',
 'streams_import:messages:profiles:delete:success'			 => 	'Profile deleted with success',
 'streams_import:messages:profiles:delete:failure'			 => 	'Fail in deleting the profile',
+'streams_import:messages:import:success'					 => 	'Import Done. Yeah.',
+'streams_import:messages:import:failure'					 => 	'Import fail. Sorry about that :(',
 
 
 'streams_import:messages:mapping:save:success'				 => 	'Mapping saved',

@@ -13,6 +13,8 @@ $lang = array(
 'streams_import:messages:profiles:edit:failure'				 => 'Echec dans l\'édition du profil.',
 'streams_import:messages:profiles:delete:success'			 => 'Profil supprimé avec succès.',
 'streams_import:messages:profiles:delete:failure'			 => 'Echec dans la suppression du profil.',
+'streams_import:messages:import:success'					 => 	'Import Done. Yeah.',
+'streams_import:messages:import:failure'					 => 	'Import fail. Sorry about that :(',
 
 
 'streams_import:messages:mapping:save:success'				 => 'Mapping sauvegardé',
@@ -40,16 +42,16 @@ $lang = array(
 'profiles:button:add'										=>		'Ajouter un profil',
 'streams_import:button:edit-mapping'						=>		'Editer le mapping',
 'streams_import:button:cancel'								=>		'Annuler',
-'streams_import:button:save'								=>		'Sauvegarder'
+'streams_import:button:save'								=>		'Sauvegarder',
 'streams_import:button:run'									=>		'Executer',
-'streams_import:button_next'								=>		'Suivant';
+'streams_import:button_next'								=>		'Suivant',
 
 
 
-'streams_import:title_import_csv'							=>		'Importer un fichier';
-'streams_import:misc_example_csv'							=>		'Un fichier XML / TXT ou XML';
-'streams_import:misc_csv_file'								=>		'misc';
-'streams_import:misc_instructions_csv_file'					=>		'instructions';
+'streams_import:title_import_csv'							=>		'Importer un fichier',
+'streams_import:misc_example_csv'							=>		'Un fichier XML / TXT ou XML',
+'streams_import:misc_csv_file'								=>		'misc',
+'streams_import:misc_instructions_csv_file'					=>		'instructions',
 	
 
 

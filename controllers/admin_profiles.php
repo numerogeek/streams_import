@@ -75,8 +75,8 @@ class Admin_profiles extends Admin_Controller
             for ($i=0; $i < $this->input->post('counter') ; $i++) { 
 
                 $insert_data[]=array(
-                'stream_field_id'   => $source[$i],
-                'entry_number'      => $dest[$i],
+                'stream_field_id'   => $dest[$i],
+                'entry_number'      => $source[$i],
                 'ordering_count'    => $i,
                 'created' => date('Y-m-d H:i:s'),
                 'created_by' =>  $this->current_user->id,
@@ -158,7 +158,16 @@ class Admin_profiles extends Admin_Controller
 
         if(isset($_POST['file_id']))
         {
-            $this->streams_import->process_import($profile_id, $_POST['file_id']);
+            if(!$this->streams_import->process_import($profile_id, $_POST['file_id']))
+            {
+                $this->session->set_flashdata('error', lang('streams_import:messages:import:failure'));
+            }
+            else
+            {
+                 $this->session->set_flashdata('success', lang('streams_import:messages:import:success'));
+            }
+            redirect('admin/'.$this->namespace.'/'.$this->section);
+
         }
 
 

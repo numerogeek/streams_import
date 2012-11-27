@@ -7,10 +7,10 @@
 
 		?>
 		<table>
-			<tr><td>DESTINATION</td><td>SOURCE</td></tr>
+			<tr><td>SOURCE</td><td>DESTINATION</td></tr>
 			<?php
 				for ($i=0;$i<$field_count;$i++) {
-					echo "<tr><td>".form_dropdown("source[$i]", $field_dropdown, get_current_value( $this->uri->segment(5), $i, $mode = 1))."</td><td>".form_dropdown("destination[$i]", $csv_dropdown, get_current_value( $this->uri->segment(5), $i, $mode = 2))."</td></tr>";
+					echo "<tr><td>".form_dropdown("source[$i]", $csv_dropdown, get_current_value( $this->uri->segment(5), $i, $mode = 2))."</td><td>".form_dropdown("destination[$i]", $field_dropdown, get_current_value( $this->uri->segment(5), $i, $mode = 1))."</td></tr>";
 				}
 			?>
 		</table>
