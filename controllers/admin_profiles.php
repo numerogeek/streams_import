@@ -32,7 +32,11 @@ class Admin_profiles extends Admin_Controller
 		);
 		$request_entry = $this->streams->entries->get_entries($params);
 
-		$this->template->set('entries', $request_entry)->set('section', $this->section)->set('namespace', $this->namespace)->set('title', lang($this->namespace . ':title:' . $this->section . ':index'));
+		$this->template
+			->set('entries', $request_entry)
+			->set('section', $this->section)
+			->set('namespace', $this->namespace)
+			->set('title', lang($this->namespace . ':title:' . $this->section . ':index'));
 
 		$this->template->build('admin/index');
 	}
@@ -58,9 +62,9 @@ class Admin_profiles extends Admin_Controller
 			'failure_message' => lang($this->namespace . ':messages:' . $this->section . ':create:error'),
 			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/mapping/-id-'
 		);
-		$this->streams->cp->entry_form($this->section, $this->namespace, $mode = 'new', null, $view_override = false, $extra, $skips = array());
+		$this->streams->cp->entry_form($this->section, $this->namespace, 'new', null, false, $extra);
 
-		//BUILD THE TEMPLATE 
+		// Build the template 
 		$this->template->build('admin/profiles/create', $data);
 	}
 
@@ -105,7 +109,7 @@ class Admin_profiles extends Admin_Controller
 			'where'        => ' id = ' . $id
 		);
 		$request_entry   = $this->streams->entries->get_entries($params);
-		$current_profile = $request_entry ['entries'][0];
+		$current_profile = $request_entry['entries'][0];
 		//now get the stream of the profile
 		$stream       = $this->streams->stream_obj($this->stream_slug, $this->namespace);
 		$data->fields = $this->streams_m->get_stream_fields($current_profile['stream_identifier']);
@@ -113,14 +117,14 @@ class Admin_profiles extends Admin_Controller
 
 		$data->field_count = count((array) $data->fields);
 
-		//Feed the field dropdown
+		// Feed the field dropdown
 		foreach ($data->fields as $field)
 		{
 			$data->field_dropdown[$field->field_id] = $this->fields->translate_label($field->field_name);
 		}
 
 
-		//Feed the entry dropdown
+		// Feed the entry dropdown
 		// $file_content = _pre_import_plain($current_profile['example_file']['file'],$current_profile['delimiter'],$current_profile['eol']);
 		//$handle = fopen($current_profile['example_file']['file'], 'r');
 		//$handle=stream_get_contents($handle);
@@ -130,8 +134,6 @@ class Admin_profiles extends Admin_Controller
 		$data->csv_dropdown = $file_content['entries'][0];
 
 		$this->template->build('admin/profiles/mapping', $data);
-
-
 		//var_dump( $file_content);
 	}
 
@@ -170,7 +172,7 @@ class Admin_profiles extends Admin_Controller
 
 		if ( isset($_POST['file_id']) )
 		{
-			if ( !$this->streams_import->process_import($profile_id, $_POST['file_id']) )
+			if ( ! $this->streams_import->process_import($profile_id, $_POST['file_id']) )
 			{
 				$this->session->set_flashdata('error', lang('streams_import:messages:import:failure'));
 			}
@@ -182,9 +184,9 @@ class Admin_profiles extends Admin_Controller
 			redirect('admin/' . $this->namespace . '/' . $this->section);
 		}
 
-
+		$files = $this->db->select('id, name')->where_in('extension', array('.csv', '.txt', '.xml'))->get('files');
 		// Choose a file
-		foreach ($this->db->select('id, name')->where_in('extension', array('.csv', '.txt', '.xml'))->get('files')->result() as $row)
+		foreach ($files->result() as $row)
 		{
 			$data['files'][$row->id] = $row->name;
 		}

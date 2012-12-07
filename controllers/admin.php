@@ -7,7 +7,6 @@ class Admin extends Admin_Controller
 	{
 		parent::__construct();
 
-
 		$this->lang->load('streams_import');
 	}
 
@@ -17,6 +16,7 @@ class Admin extends Admin_Controller
 		redirect('/admin/streams_import/profiles');
 		//$this->template->build('admin/dashboard');
 	}
+	
 }
 
 /* EOF */
