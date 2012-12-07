@@ -21,7 +21,7 @@ class Module_Streams_import extends Module
 			'backend'     => true,
 			'plugin'      => true,
 			'events'      => true,
-			'menu'        => 'profiles',
+			'menu'        => 'utilities',
 			'sections'    => array(
 				'profiles' => array(
 					'name'      => $this->module_name . ':title:profiles:index',
