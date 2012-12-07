@@ -111,7 +111,6 @@ class Admin_profiles extends Admin_Controller
 		$request_entry   = $this->streams->entries->get_entries($params);
 		$current_profile = $request_entry['entries'][0];
 		//now get the stream of the profile
-		$stream       = $this->streams->stream_obj($this->stream_slug, $this->namespace);
 		$data->fields = $this->streams_m->get_stream_fields($current_profile['stream_identifier']);
 
 
@@ -122,7 +121,11 @@ class Admin_profiles extends Admin_Controller
 		{
 			$data->field_dropdown[$field->field_id] = $this->fields->translate_label($field->field_name);
 		}
-
+		
+			$data->field_dropdown['id'] = 'id';
+			$data->field_dropdown['created'] = 'created';
+			$data->field_dropdown['updated'] = 'updated';
+			$data->field_dropdown['created_by'] = 'created_by';
 
 		// Feed the entry dropdown
 		// $file_content = _pre_import_plain($current_profile['example_file']['file'],$current_profile['delimiter'],$current_profile['eol']);

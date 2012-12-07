@@ -221,7 +221,10 @@ class Module_Streams_import extends Module
 				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
 				'slug'            => $field_slug,
 				'namespace'       => $this->module_name,
-				'type'            => 'integer',
+				'type'            => 'text',
+				'extra'           => array(
+	                     'max_length'    => 20
+                     ),
 				'assign'          => $stream_slug,
 				'title_column'    => false,
 				'required'        => false,

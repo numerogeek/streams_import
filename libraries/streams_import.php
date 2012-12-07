@@ -70,8 +70,25 @@ class Streams_import
 			);
 			foreach ($mapping['entries'] as $map)
 			{
+				switch  ($map['stream_field_id']) {
+					case "id":
+						$insert_data['id'] = (int)$entry[$map['entry_number']];
+					break;
+					case "created_by":
+						$insert_data['created_by'] = $entry[$map['entry_number']];
+					break;
 
-				$insert_data[$formated_fields[$map['stream_field_id']]] = $entry[$map['entry_number']];
+					case "created":
+						$insert_data['created'] = $entry[$map['entry_number']];
+					break;
+					case "updated":
+						$insert_data['updated'] = $entry[$map['entry_number']];
+					break;
+
+					default:
+					$insert_data[$formated_fields[$map['stream_field_id']]] = $entry[$map['entry_number']];
+					break;
+				}
 			}
 			$batch[] = $insert_data;
 
