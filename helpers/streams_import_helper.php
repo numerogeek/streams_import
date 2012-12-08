@@ -99,10 +99,15 @@ if ( !function_exists('_pre_import_csv_to_stream') )
 		{
 			ini_set('auto_detect_line_endings', TRUE);
 			// ini_set(memory_limit, "1000M");
-
+			$i=0;
 			while (($line = fgetcsv($handle, $length = 0, $delimiter, $enclosure)) !== false)
 			{
-				$data['entries'][] = $line;
+				if($i==0):
+					$data['entries'][] = str_replace($enclosure, "", $line);
+				else:
+					$data['entries'][] = $line;
+				endif;
+				$i++;
 			}
 
 			fclose($handle);
