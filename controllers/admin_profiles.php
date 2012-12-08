@@ -4,36 +4,28 @@ class Admin_profiles extends Admin_Controller
 {
 
 	protected $section = 'profiles';
-	protected $stream_slug = 'profiles';
-	protected $namespace = 'streams_import';
+	public $stream_slug;
+	public $namespace;
 
 
 	public function __construct()
 	{
 		parent::__construct();
 
-		// Load Drivers
-		$this->load->driver('Streams');
-		$this->lang->load('streams_import');
-		$this->load->library('streams');
-		$this->load->model('streams_core/streams_m');
-		$this->load->helper('streams_import');
-		$this->load->library(array('form_validation', 'streams_core/Fields', 'streams_import'));
+		// Load Everything
+		$this->load->library('streams_import');
+		
+		$this->stream_slug = $this->streams_import->stream_slug;
+		$this->namespace = $this->streams_import->namespace;
 	}
 
 
 	public function index()
 	{
-
-		$params        = array(
-			'stream'    => $this->stream_slug,
-			'namespace' => $this->namespace,
-			//'where'        => $base_where
-		);
-		$request_entry = $this->streams->entries->get_entries($params);
+		$profiles = $this->streams_import_m->get_profiles();
 
 		$this->template
-			->set('entries', $request_entry)
+			->set('entries', $profiles)
 			->set('section', $this->section)
 			->set('namespace', $this->namespace)
 			->set('title', lang($this->namespace . ':title:' . $this->section . ':index'));
@@ -44,25 +36,7 @@ class Admin_profiles extends Admin_Controller
 
 	public function create()
 	{
-		// Get stream
-		$stream       = $this->streams->stream_obj($this->stream_slug, $this->namespace);
-		$data->fields = $this->streams_m->get_stream_fields($stream->id);
-
-		$stream_list = $this->db->select("id, stream_namespace, stream_slug")->get('data_streams')->result();
-		foreach ($stream_list as $single_stream)
-		{
-			$data->stream_dropdown[$single_stream->id] = $single_stream->stream_namespace . ' - ' . $single_stream->stream_slug;
-			# code...
-		}
-
-		// Processing the POST data    
-		$extra = array(
-			'title'           => lang($this->namespace . ':title:' . $this->section . ':create'),
-			'success_message' => lang($this->namespace . ':messages:' . $this->section . ':create:success'),
-			'failure_message' => lang($this->namespace . ':messages:' . $this->section . ':create:error'),
-			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/mapping/-id-'
-		);
-		$this->streams->cp->entry_form($this->section, $this->namespace, 'new', null, false, $extra);
+		$this->streams_import->entry_form('new');
 
 		// Build the template 
 		$this->template->build('admin/profiles/create', $data);

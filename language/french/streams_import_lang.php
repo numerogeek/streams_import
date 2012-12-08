@@ -22,22 +22,25 @@ $lang = array(
 	//Fields
 	//customer
 	'streams_import:fields:profile_name'                    => 'Nom du profil',
-	'streams_import:fields:profile'                         => 'Profil ID',
+	'streams_import:fields:profile'                         => 'Profile ID', #translate
 	'streams_import:fields:entry_number'                    => 'Entrée',
-	'streams_import:fields:stream_field_id'                 => 'Stream Field ID',
-	'streams_import:fields:equalities'                      => 'Associations',
-	'streams_import:fields:stream_identifier'               => 'Stream Destination',
+	'streams_import:fields:stream_field_id'                 => 'Stream Field ID', #translate
+	'streams_import:fields:equalities'                      => 'Associations', #translate
+	'streams_import:fields:stream_identifier'               => 'Stream Destination', #translate
 	'streams_import:fields:eol'                             => 'Fin de ligne',
 	'streams_import:fields:delimiter'                       => 'Delimiteur',
 	'streams_import:fields:delimiter:instructions'          => '',
-	'streams_import:fields:example_file'                    => 'Example File',
-	'streams_import:fields:enclosure'                       => 'enclosure',
+	'streams_import:fields:example_file'                    => 'Example File', #translate
+	'streams_import:fields:enclosure'                       => 'Enclosure', #translate
 	'streams_import:fields:delimiter:instructions'          => '',
 	'streams_import:fields:namespace_stream_slug'           => 'Concerned Namespace/Streams Slug',
+	'streams_import:fields:include_all'                     => 'Include All Fields?', #translate
+	'streams_import:fields:include_one'                     => 'Include This Field?', #translate
 
 
 	//button
 	'profiles:button:add'                                   => 'Ajouter un profil',
+	'streams_import:button:quick_import'                    => 'Quick Import', #translate
 	'streams_import:button:edit-mapping'                    => 'Editer le mapping',
 	'streams_import:button:cancel'                          => 'Annuler',
 	'streams_import:button:save'                            => 'Sauvegarder',
@@ -47,8 +50,8 @@ $lang = array(
 
 	'streams_import:title_import_csv'                       => 'Importer un fichier',
 	'streams_import:misc_example_csv'                       => 'Un fichier XML / TXT ou XML',
-	'streams_import:misc_csv_file'                          => 'misc',
-	'streams_import:misc_instructions_csv_file'             => 'instructions',
+	'streams_import:misc_csv_file'                          => 'Misc.', #translate
+	'streams_import:misc_instructions_csv_file'             => 'Instructions', #translate
 
 
 );	

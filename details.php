@@ -26,13 +26,18 @@ class Module_Streams_import extends Module
 				'profiles' => array(
 					'name'      => $this->module_name . ':title:profiles:index',
 					'uri'       => 'admin/' . $this->module_name . '/profiles',
-					'shortcuts' => array(
-						'customers:add' => array(
-							'name'   => 'profiles:button:add',
-							'uri'    => 'admin/' . $this->module_name . '/profiles/create',
-							'class'  => 'add'
-						)
-					)
+				)
+			),
+			'shortcuts' => array(
+				'quick_import' => array(
+					'name'   => $this->module_name.':button:quick_import',
+					'uri'    => 'admin/' . $this->module_name . '/quick_import',
+					'class'  => 'add'
+				),
+				'customers:add' => array(
+					'name'   => 'profiles:button:add',
+					'uri'    => 'admin/' . $this->module_name . '/profiles/create',
+					'class'  => 'add'
 				)
 			),
 		);

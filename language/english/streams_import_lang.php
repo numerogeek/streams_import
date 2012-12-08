@@ -22,22 +22,25 @@ $lang = array(
 	//Fields
 	//customer
 	'streams_import:fields:profile_name'                    => 'Profile Name',
-	'streams_import:fields:profile'                         => 'Profil ID',
+	'streams_import:fields:profile'                         => 'Profile ID',
 	'streams_import:fields:entry_number'                    => 'Entry',
 	'streams_import:fields:stream_field_id'                 => 'Stream Field ID',
 	'streams_import:fields:equalities'                      => 'Associations',
-	'streams_import:fields:stream_identifier'               => 'stream ID',
+	'streams_import:fields:stream_identifier'               => 'Stream',
 	'streams_import:fields:eol'                             => 'EOL',
 	'streams_import:fields:delimiter'                       => 'Delimiter',
 	'streams_import:fields:delimiter:instructions'          => '',
 	'streams_import:fields:example_file'                    => 'Example File',
-	'streams_import:fields:enclosure'                       => 'enclosure',
+	'streams_import:fields:enclosure'                       => 'Enclosure',
 	'streams_import:fields:delimiter:instructions'          => '',
 	'streams_import:fields:namespace_stream_slug'           => 'Concerned Namespace/Streams Slug',
+	'streams_import:fields:include_all'                     => 'Include All Fields?',
+	'streams_import:fields:include_one'                     => 'Include This Field?',
 
 
 	//button
 	'profiles:button:add'                                   => 'Add a profile',
+	'streams_import:button:quick_import'                    => 'Quick Import',
 	'streams_import:button:edit-mapping'                    => 'Edit mapping',
 	'streams_import:button:cancel'                          => 'Cancel',
 	'streams_import:button:save'                            => 'Save',
