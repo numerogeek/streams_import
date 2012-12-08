@@ -36,6 +36,10 @@ $lang = array(
 	'streams_import:fields:namespace_stream_slug'           => 'Concerned Namespace/Streams Slug',
 	'streams_import:fields:include_all'                     => 'Include All Fields?',
 	'streams_import:fields:include_one'                     => 'Include This Field?',
+	'streams_import:fields:url'                             => 'URL',
+	'streams_import:fields:url_instructions'                => '',
+	'streams_import:fields:source_format'                   => 'Source Format',
+	'streams_import:fields:source_format_instructions'      => 'The format of the source data',
 
 
 	//button

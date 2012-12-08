@@ -18,7 +18,9 @@ class Admin extends Admin_Controller
 	}
 	
 	
-	public function quick_import($page = 'index') {
+	public function quick_import($page = 'index')
+	{
+		# validation is handled in JS
 		
 		if ($page == 'mapping') {
 			return $this->_mapping();
@@ -41,6 +43,8 @@ class Admin extends Admin_Controller
 
 	public function _mapping()
 	{
+		# validation is handled in JS
+		
 		$url           = $this->input->post('url');
 		$source_format = $this->input->post('source_format');
 		$stream_id     = $this->input->post('stream_identifier');

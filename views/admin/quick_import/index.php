@@ -12,10 +12,8 @@
 	<?php endforeach; ?>
 	</ul>
 	
-	<div class="float-right buttons">
-		<button type="submit" name="btnAction" value="save" class="btn blue">
-			<span><?php echo lang('buttons.save'); ?></span></button>
-
+	<div class="buttons">
+		<button type="submit" name="btnAction" value="import" class="button red"><?php echo lang('streams_import:button_next'); ?></button>
 	</div>
 
 	<?php echo form_close();?>
