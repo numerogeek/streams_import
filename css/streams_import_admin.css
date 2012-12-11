@@ -1,5 +1,11 @@
-/*@ mapping checkboxes */
+/*@ QI mapping checkboxes */
+#sim_mapping {  } /* bug: white shade to left */
 #sim_mapping tr .row_checkbox { position: relative; z-index: 2 }
 #sim_mapping tr .row_screen { display: none }
 #sim_mapping tr.unselected .row_screen { display: block; position: relative; }
-#sim_mapping tr.unselected .shade { display: block; height: 40px; width: 220%; opacity: .7; filter:alpha(opacity=70%); position: absolute; top: -40px; right: 0; background: white; z-index: 1 }
+#sim_mapping tr.unselected .shade { display: block; height: 40px; width: 200%; opacity: .7; filter:alpha(opacity=70%); position: absolute; top: -40px; right: 0; background: white; z-index: 1 }
+
+/*@ QI success page */
+#sim_success .row_sep { background: #ccc; text-align: center }
+#sim_success .key { text-align: right; vertical-align: top; }
+#sim_success .preformatted { white-space: pre-wrap; }

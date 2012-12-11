@@ -1,8 +1,20 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * Streams Import Admin Controller
+ *
+ * @package  PyroCMS\Addons\Modules\Streams Import\Models
+ * @author   PyroCMS Community
+ * @website  https://github.com/bergeo-fr/streams_import
+ */
 class Admin extends Admin_Controller
 {
 
+	/**
+	 * Constructor!
+	 * 
+	 * Include the Library which includes all
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -11,13 +23,20 @@ class Admin extends Admin_Controller
 	}
 
 
+	/**
+	 * Redirect our home to the Profiles page
+	 */
 	public function index()
 	{
 		redirect('/admin/streams_import/profiles');
-		//$this->template->build('admin/dashboard');
 	}
-	
-	
+
+
+	/**
+	 * Quick Import wizard action
+	 * 
+	 * @param string  $page  Our current page / step
+	 */
 	public function quick_import($page = 'index')
 	{
 		# validation is handled in JS
@@ -41,28 +60,53 @@ class Admin extends Admin_Controller
 	}
 
 
+	/**
+	 * Quick Import mapping action
+	 */
 	public function _mapping()
 	{
 		# validation is handled in JS
 		
-		$url           = $this->input->post('url');
-		$source_format = $this->input->post('source_format');
-		$stream_id     = $this->input->post('stream_identifier');
+		$data = array(
+			'page_title'    => 'Quick Import',
+			'url'           => $this->input->post('url'),
+			'source_format' => $this->input->post('source_format'),
+			'stream_id'     => $this->input->post('stream_identifier'),
+		);
 		
-		$raw_data = file_get_contents($url);
+		$data['raw_source_data'] = file_get_contents($data['url']);
 		
-		$data = $this->streams_import->process_to_array($source_format, $raw_data);
+		$data['source_data'] = $this->streams_import->process_to_array($data['source_format'], $data['raw_source_data']);
 		
-		$data = $this->streams_import->mapping_form($data, $stream_id);
+		$form = $this->streams_import->mapping_form($data['source_data'], $data['stream_id']);
 		
-		$this->template->set('page_title', 'Quick Import')->build('admin/quick_import/mapping', $data);
+		$data = array_merge($data, $form);
+		
+		# store the data to use in next step
+		$this->pyrocache->write(serialize($data), 'sim_quick_import');
+		
+		$this->template->build('admin/quick_import/mapping', $data);
 	}
 
 
+	/**
+	 * Quick Import importing action
+	 */
 	public function _import()
 	{
-		die(print_r($_POST));
-		$this->template->set('page_title', 'Quick Import')->build('admin/quick_import/import');
+		$data = unserialize($this->pyrocache->get('sim_quick_import'));
+		
+		# destroy!
+		$this->pyrocache->delete('sim_quick_import');
+		
+		$data['inserted_rows'] = $this->streams_import_m->insert_stream_data($data['source_data'], $data['stream_id']);
+		
+		$data['total_inserted'] = count($data['inserted_rows']);
+		
+		// replace special characters for security reasons
+		$data['inserted_rows'] = json_decode(htmlspecialchars(json_encode($data['inserted_rows']), ENT_NOQUOTES));
+		
+		$this->template->build('admin/quick_import/success', $data);
 	}
 }
 

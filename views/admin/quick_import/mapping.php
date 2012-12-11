@@ -14,7 +14,7 @@
 		</tr>
 	<?php foreach ($fields as $field) : ?>
 		<tr>
-			<td><?php echo form_checkbox('include[]', true, true, 'class="row_checkbox" title="'.lang('streams_import:fields:include_one').'"') ?></td>
+			<td><?php echo $field['include'] ?></td>
 			<td><?php echo $field['source'] ?></td>
 			<td><?php echo $field['destination'] ?><span class="row_screen"><span class="shade"></span></span></td>
 		</tr>

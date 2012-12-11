@@ -1,20 +1,49 @@
-<?php
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * Streams Import Library
+ *
+ * @package  PyroCMS\Addons\Modules\Streams Import\Models
+ * @author   PyroCMS Community
+ * @website  https://github.com/bergeo-fr/streams_import
+ */
 class Streams_import
 {
 
+	/**
+	 * CI Instance
+	 * 
+	 * @var CI_Controller
+	 */
 	private $ci;
-	
+
+	/**
+	 * Stream Slug
+	 * 
+	 * Master record. All other classes pull this value.
+	 * 
+	 * @var string
+	 */
 	public $stream_slug = 'profiles';
+	
+	/**
+	 * Stream Namespace
+	 * 
+	 * Master record. All other classes pull this value.
+	 * 
+	 * @var string
+	 */
 	public $namespace = 'streams_import';
 
 
+	/**
+	 * Constructor!
+	 */
 	public function  __construct()
 	{
-		// Curl is needed
 		$this->ci =& get_instance();
 
-		// Load our goods
+		// load everything here
 		$this->ci->load->helper('streams_import');
 		$this->ci->lang->load('streams_import');
 		$this->ci->load->library(array('streams','form_validation', 'streams_core/Fields'));
@@ -22,6 +51,13 @@ class Streams_import
 	}
 
 
+	/**
+	 * Process an Import
+	 * 
+	 * @param int  $profile_id  Profile ID
+	 * @param int  $file_id     The ID of the file we are importing
+	 * @return bool
+	 */
 	public function process_import($profile_id, $file_id)
 	{
 		// Get the file
@@ -71,25 +107,8 @@ class Streams_import
 			);
 			foreach ($mapping['entries'] as $map)
 			{
-				switch  ($map['stream_field_id']) {
-					case "id":
-						$insert_data['id'] = (int)$entry[$map['entry_number']];
-					break;
-					case "created_by":
-						$insert_data['created_by'] = $entry[$map['entry_number']];
-					break;
 
-					case "created":
-						$insert_data['created'] = $entry[$map['entry_number']];
-					break;
-					case "updated":
-						$insert_data['updated'] = $entry[$map['entry_number']];
-					break;
-
-					default:
-					$insert_data[$formated_fields[$map['stream_field_id']]] = $entry[$map['entry_number']];
-					break;
-				}
+				$insert_data[$formated_fields[$map['stream_field_id']]] = $entry[$map['entry_number']];
 			}
 			$batch[] = $insert_data;
 
@@ -98,58 +117,67 @@ class Streams_import
 		// Import them
 		return batch_insert_update($stream->stream_prefix . $stream->stream_slug, $batch, array('ordering_count'));
 	}
-	
-	
+
+
+	/**
+	 * Generate the entry form and other goodies
+	 * 
+	 * @param string  $mode  Form mode: new | edit
+	 * @return array
+	 */
 	public function entry_form($mode = 'new') {
-		// Get stream
 		$stream = $this->ci->streams_import_m->get_stream_with_fields();
 		
-		// Processing the POST data    
-		$extra = array(
-			'title'           => lang($this->namespace . ':title:' . $this->stream_slug . ':create'),
-			'success_message' => lang($this->namespace . ':messages:' . $this->stream_slug . ':create:success'),
-			'failure_message' => lang($this->namespace . ':messages:' . $this->stream_slug . ':create:error'),
-			'return'          => 'admin/' . $this->namespace . '/' . $this->stream_slug . '/mapping/-id-'
+		return array(
+			'mode'   => $mode,
+			'fields' => $stream->fields,
+			'stream' => $stream
 		);
-		
-		return $this->ci->streams->cp->entry_form($this->stream_slug, $this->namespace, $mode, null, false, $extra);
-	}
-
-
-	public function mapping_form($new_data = array(), $stream_id = 0)
-	{
-		$map = $this->automap($new_data, $stream_id);
-		
-		//die(print_r($map));
-		return $map;
 	}
 
 
 	/**
-	 * Maps like IDs to the same
+	 * Generate the Mapping form
 	 * 
-	 * @param array $data
-	 * @param int   $stream_id
+	 * @param array  $data       Raw source data (after processed by `process_to_array()`)
+	 * @param int    $stream_id  ID of Stream to match to
 	 * @return array
 	 */
-	public function automap($data = array(), $stream_id = 0)
+	public function mapping_form($data = array(), $stream_id = 0)
 	{	
-		$stream_fields = $this->ci->streams_m->get_stream_fields($stream_id);
+		# gather our fields
+		$stream_fields = (array) $this->ci->streams_m->get_stream_fields($stream_id);
+		$core_fields = array();
 		$source_fields = $data[0];
-		$destination_fields = array(0 => '');
-		$i = 0;
+		$destination_fields = array();
+		
+		# add some required fields if necessary; for Streams support
+		foreach (array('id', 'created', 'updated', 'created_by', 'ordering_count') as $col) {
+			if ( ! isset($stream_fields[$col]) ) {
+				$core_fields[$col] = ucwords(str_replace('_', ' ', $col));
+			}
+		}
 		
 		# for each destination field
-		// set stream fields as values for dropdown
+		// format for dropdown element
 		foreach ($stream_fields as &$field) {
 			$destination_fields[$field->field_slug] = $field->field_name;
 		}
 		
+		// add in some optgroups and default item
+		$destination_fields = array(
+			0 => '', // "Select an Option"
+			'Streams Core Fields' => $core_fields,
+			'Custom Fields' => $destination_fields
+		);
+		
 		# for each source field
-		// set source and destination dropdowns
+		// format for dropdowns
+		$i = 0;
 		foreach ($source_fields as $field_name => $value) {
 			$fields[] = array(
-				'source' => form_dropdown("source[$i]", array_combine(array_keys($source_fields), array_keys($source_fields)), $field_name),
+				'include' => form_checkbox("include[$i]", true, true, 'class="row_checkbox" title="'.lang('streams_import:fields:include_one').'"'),
+				'source' => $field_name . form_hidden("source[$i]", $field_name),
 				'destination' => form_dropdown("destination[$i]", $destination_fields, $field_name)
 			);
 			$i++;
@@ -157,6 +185,7 @@ class Streams_import
 		
 		return array(
 			'fields' => $fields,
+			'core_fields' => $core_fields,
 			'source_fields' => $source_fields,
 			'destination_fields' => $destination_fields
 		);
@@ -172,16 +201,24 @@ class Streams_import
 	 */
 	public function process_to_array($format, $raw_data)
 	{
+		// JSON
 		if ($format == 'json') {
 			$data = json_decode($raw_data, true);
 		}
-			
+		
+		// CSV
 		if ($format == 'csv') {
 			
 		}
-			
+		
+		# Validate data or ERROR
+		// no data?
 		if ( ! isset($data) ) {
 			show_error('Sorry, this format is not supported.');
+		}
+		// non-indexed array
+		if ( ! isset($data[0]) ) {
+			show_error('Your data needs to be an indexed array.');
 		}
 		
 		return $data;

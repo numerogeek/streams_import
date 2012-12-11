@@ -3,7 +3,7 @@
 class Module_Streams_import extends Module
 {
 
-	public $version = 0.1;
+	public $version = 0.2;
 	public $module_name = "streams_import";
 
 
@@ -133,7 +133,8 @@ class Module_Streams_import extends Module
 				'namespace'       => $this->module_name,
 				'type'            => 'text',
 				'extra'           => array(
-					                     'max_length'    => 5
+					                     'max_length'    => 5,
+					                     'default_value' => ','
 				                     ),
 				'assign'          => $stream_slug,
 				'title_column'    => false,
@@ -153,7 +154,8 @@ class Module_Streams_import extends Module
 				'namespace'       => $this->module_name,
 				'type'            => 'text',
 				'extra'           => array(
-					                     'max_length'    => 5
+					                     'max_length'    => 5,
+					                     'default_value' => '\n'
 				                     ),
 				'assign'          => $stream_slug,
 				'title_column'    => false,
@@ -172,7 +174,8 @@ class Module_Streams_import extends Module
 				'namespace'       => $this->module_name,
 				'type'            => 'text',
 				'extra'           => array(
-					                     'max_length'    => 5
+					                     'max_length'    => 5,
+					                     'default_value' => ''
 				                     ),
 				'assign'          => $stream_slug,
 				'title_column'    => false,
@@ -226,10 +229,7 @@ class Module_Streams_import extends Module
 				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
 				'slug'            => $field_slug,
 				'namespace'       => $this->module_name,
-				'type'            => 'text',
-				'extra'           => array(
-	                     'max_length'    => 20
-                     ),
+				'type'            => 'integer',
 				'assign'          => $stream_slug,
 				'title_column'    => false,
 				'required'        => false,

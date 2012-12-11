@@ -1,13 +1,46 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * Streams Import Admin Profiles Controller
+ *
+ * @package  PyroCMS\Addons\Modules\Streams Import\Models
+ * @author   PyroCMS Community
+ * @website  https://github.com/bergeo-fr/streams_import
+ */
 class Admin_profiles extends Admin_Controller
 {
 
+	/**
+	 * Admin Section var
+	 * 
+	 * @var string
+	 */
 	protected $section = 'profiles';
+	
+	/**
+	 * Stream Slug
+	 * 
+	 * Auto imported from Streams Import Library
+	 * 
+	 * @var string
+	 */
 	public $stream_slug;
+	
+	/**
+	 * Stream Namespace
+	 * 
+	 * Auto imported from Streams Import Library
+	 * 
+	 * @var string
+	 */
 	public $namespace;
 
 
+	/**
+	 * Constructor!
+	 * 
+	 * Load the Library which loads all, and set some items automatically.
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -20,6 +53,9 @@ class Admin_profiles extends Admin_Controller
 	}
 
 
+	/**
+	 * Default Admin Home, Profiles list screen
+	 */
 	public function index()
 	{
 		$profiles = $this->streams_import_m->get_profiles();
@@ -28,21 +64,27 @@ class Admin_profiles extends Admin_Controller
 			->set('entries', $profiles)
 			->set('section', $this->section)
 			->set('namespace', $this->namespace)
-			->set('title', lang($this->namespace . ':title:' . $this->section . ':index'));
-
-		$this->template->build('admin/index');
+			->set('title', lang($this->namespace . ':title:' . $this->section . ':index'))
+			->build('admin/index');
 	}
 
 
+	/**
+	 * Create a new Profile
+	 */
 	public function create()
 	{
-		$this->streams_import->entry_form('new');
+		$data = $this->streams_import->entry_form('new');
 
-		// Build the template 
 		$this->template->build('admin/profiles/create', $data);
 	}
 
 
+	/**
+	 * Profile Mapping screen
+	 * 
+	 * @param $id  Profile ID
+	 */
 	public function mapping($id)
 	{
 
@@ -115,6 +157,11 @@ class Admin_profiles extends Admin_Controller
 	}
 
 
+	/**
+	 * Edit Profile screen
+	 * 
+	 * @param $id  Profile ID
+	 */
 	public function edit($id)
 	{
 
@@ -129,6 +176,11 @@ class Admin_profiles extends Admin_Controller
 	}
 
 
+	/**
+	 * Delete Profile screen
+	 * 
+	 * @param $id  Profile ID
+	 */
 	public function delete($id)
 	{
 		if ( $this->streams->entries->delete_entry($id, $this->section, $this->namespace) )
@@ -144,6 +196,11 @@ class Admin_profiles extends Admin_Controller
 	}
 
 
+	/**
+	 * Run an import against a Profile
+	 * 
+	 * @param $profile_id  Profile ID
+	 */
 	public function run($profile_id)
 	{
 
