@@ -96,7 +96,7 @@ class Streams_import_m extends MY_Model
 			$stream->stream_dropdown[$single_stream->id] = $single_stream->stream_namespace . ' - ' . $single_stream->stream_slug;
 		}
 		
-		return $stream;
+		return $this->stream_field_hack($stream);
 	}
 
 
@@ -110,6 +110,12 @@ class Streams_import_m extends MY_Model
 	 */
 	public function stream_field_hack($stream)
 	{
+		// don't run twice
+		if ( isset($stream->fields->stream_identifier->field_type) and $stream->fields->stream_identifier->field_type == 'choice') 
+		{
+			return $stream;
+		}
+		
 		$choice_data = '';
 		
 		foreach ($stream->stream_dropdown as $id => $name) {

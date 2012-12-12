@@ -45,7 +45,7 @@ class Admin_profiles extends Admin_Controller
 	{
 		parent::__construct();
 
-		// Load Everything
+		// load everything
 		$this->load->library('streams_import');
 		
 		$this->stream_slug = $this->streams_import->stream_slug;
@@ -74,8 +74,27 @@ class Admin_profiles extends Admin_Controller
 	 */
 	public function create()
 	{
-		$data = $this->streams_import->entry_form('new');
+		// Get stream
+		$stream       = $this->streams->stream_obj($this->stream_slug, $this->namespace);
+		$data->fields = $this->streams_m->get_stream_fields($stream->id);
 
+		$stream_list = $this->db->select("id, stream_namespace, stream_slug")->get('data_streams')->result();
+		foreach ($stream_list as $single_stream)
+		{
+			$data->stream_dropdown[$single_stream->id] = $single_stream->stream_namespace . ' - ' . $single_stream->stream_slug;
+			# code...
+		}
+
+		// Processing the POST data    
+		$extra = array(
+			'title'           => lang($this->namespace . ':title:' . $this->section . ':create'),
+			'success_message' => lang($this->namespace . ':messages:' . $this->section . ':create:success'),
+			'failure_message' => lang($this->namespace . ':messages:' . $this->section . ':create:error'),
+			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/mapping/-id-'
+		);
+		$this->streams->cp->entry_form($this->section, $this->namespace, 'new', null, false, $extra);
+
+		// Build the template 
 		$this->template->build('admin/profiles/create', $data);
 	}
 
@@ -87,7 +106,6 @@ class Admin_profiles extends Admin_Controller
 	 */
 	public function mapping($id)
 	{
-
 		if ( $this->input->post() )
 		{
 			// We delete all existing data and we will overwrite everything
