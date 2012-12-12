@@ -141,7 +141,6 @@ class Streams_import_m extends MY_Model
 	 */
 	public function quick_import_fields($stream)
 	{
-		$stream = $this->stream_field_hack($stream);
 		$faux_fields = array(
 			'url'           => array(
 				'assign_id'        => '138',

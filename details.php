@@ -1,10 +1,19 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * Streams Import Module
+ * 
+ * Import data into Streams from various formats and mediums
+ *
+ * @package  PyroCMS\Addons\Modules\Streams Import
+ * @author   PyroCMS Community
+ * @website  https://github.com/bergeo-fr/streams_import
+ */
 class Module_Streams_import extends Module
 {
 
 	public $version = 0.2;
-	public $module_name = "streams_import";
+	public $module_name = 'streams_import';
 
 
 	public function info()

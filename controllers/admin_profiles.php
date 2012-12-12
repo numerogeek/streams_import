@@ -3,7 +3,7 @@
 /**
  * Streams Import Admin Profiles Controller
  *
- * @package  PyroCMS\Addons\Modules\Streams Import\Models
+ * @package  PyroCMS\Addons\Modules\Streams Import\Controllers
  * @author   PyroCMS Community
  * @website  https://github.com/bergeo-fr/streams_import
  */

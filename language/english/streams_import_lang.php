@@ -1,11 +1,22 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
+
+/**
+ * Streams Import Language
+ *
+ * @package  PyroCMS\Addons\Modules\Streams Import\Lang
+ * @author   PyroCMS Community
+ * @website  https://github.com/bergeo-fr/streams_import
+ */
 $lang = array(
-	//Title
+	# titles
 	'streams_import:title:profiles:index'                   => 'Profiles',
 	'streams_import:title:profiles:create'                  => 'Create a new profile',
 	'streams_import:title:profiles:edit'                    => 'Edit the profile',
+	'streams_import:title:profiles:quick_import'            => 'Quick Import',
+	'streams_import:title:profiles:quick_import_mapping'    => 'Quick Import: Mapping',
+	'streams_import:title:profiles:quick_import_success'    => 'Quick Import: Success',
 
-	//Message
+	# messages
 	'streams_import:messages:profiles:create:success'       => 'New profile created with success.',
 	'streams_import:messages:profiles:create:failure'       => 'Fail in creation of the profile.',
 	'streams_import:messages:profiles:edit:success'         => 'Profile edited with success',
@@ -14,13 +25,10 @@ $lang = array(
 	'streams_import:messages:profiles:delete:failure'       => 'Fail in deleting the profile',
 	'streams_import:messages:import:success'                => 'Import Done. Yeah.',
 	'streams_import:messages:import:failure'                => 'Import fail. Sorry about that :(',
-
-
 	'streams_import:messages:mapping:save:success'          => 'Mapping saved',
 	'streams_import:messages:mapping:save:failure'          => 'Mapping Failed',
 
-	//Fields
-	//customer
+	# fields
 	'streams_import:fields:profile_name'                    => 'Profile Name',
 	'streams_import:fields:profile'                         => 'Profile ID',
 	'streams_import:fields:entry_number'                    => 'Entry',
@@ -41,8 +49,7 @@ $lang = array(
 	'streams_import:fields:source_format'                   => 'Source Format',
 	'streams_import:fields:source_format_instructions'      => 'The format of the source data',
 
-
-	//button
+	# buttons
 	'profiles:button:add'                                   => 'Add a profile',
 	'streams_import:button:quick_import'                    => 'Quick Import',
 	'streams_import:button:edit-mapping'                    => 'Edit mapping',
@@ -51,7 +58,7 @@ $lang = array(
 	'streams_import:button:run'                             => 'Run !',
 	'streams_import:button_next'                            => 'Next',
 
-
+	# misc.
 	'streams_import:title_import_csv'                       => 'Run import.',
 	'streams_import:misc_example_csv'                       => 'Choose a file and click next.  (XML / TXT or XML)',
 	'streams_import:misc_csv_file'                          => 'Pick a file',

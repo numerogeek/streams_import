@@ -3,7 +3,7 @@
 /**
  * Streams Import Library
  *
- * @package  PyroCMS\Addons\Modules\Streams Import\Models
+ * @package  PyroCMS\Addons\Modules\Streams Import\Libraries
  * @author   PyroCMS Community
  * @website  https://github.com/bergeo-fr/streams_import
  */
@@ -139,7 +139,7 @@ class Streams_import
 	/**
 	 * Generate the Mapping form
 	 * 
-	 * @param array  $data       Raw source data (after processed by `process_to_array()`)
+	 * @param array  $data       Raw source data (after processed by `file_to_array()`)
 	 * @param int    $stream_id  ID of Stream to match to
 	 * @return array
 	 */
@@ -195,11 +195,11 @@ class Streams_import
 	/**
 	 * Process a source format into DB ready array
 	 *
-	 * @param string  $path    The URL or file path to file
+	 * @param string  $path    The URL or file path to file (runs `file_get_contents()` on it)
 	 * @param string  $format  The format name: json | csv | etc...
 	 * @return array
 	 */
-	public function process_to_array($path, $format)
+	public function file_to_array($path, $format)
 	{
 		# get the file contents
 		try {

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Streams Import Helper
+ *
+ * @package  PyroCMS\Addons\Modules\Streams Import\Helpers
+ * @author   PyroCMS Community
+ * @website  https://github.com/bergeo-fr/streams_import
+ */
 if ( !function_exists('batch_insert_update') )
 {
 	function batch_insert_update($table = '', $set = NULL, $update_keys = array(), $batch = 500)

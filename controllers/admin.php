@@ -3,7 +3,7 @@
 /**
  * Streams Import Admin Controller
  *
- * @package  PyroCMS\Addons\Modules\Streams Import\Models
+ * @package  PyroCMS\Addons\Modules\Streams Import\Controllers
  * @author   PyroCMS Community
  * @website  https://github.com/bergeo-fr/streams_import
  */
@@ -49,14 +49,14 @@ class Admin extends Admin_Controller
 		}
 		
 		$stream = $this->streams_import_m->get_stream_with_fields();
-		# temporary hack
+		// @todo: temporary hack
 		$stream = $this->streams_import_m->quick_import_fields($stream);
 		
 		$stream->entry_form = $this->streams_import->entry_form('new');
 		
-		//die(print_r($stream));
-		
-		$this->template->set('page', $page)->set('page_title', 'Quick Import')->build('admin/quick_import/'.$page, $stream);
+		$this->template
+			->set('page_title', lang('streams_import:title:profiles:quick_import'))
+			->build('admin/quick_import/'.$page, $stream);
 	}
 
 
@@ -68,13 +68,13 @@ class Admin extends Admin_Controller
 		# validation is handled in JS
 		
 		$data = array(
-			'page_title'    => 'Quick Import',
+			'page_title'    => lang('streams_import:title:profiles:quick_import_mapping'),
 			'url'           => $this->input->post('url'),
 			'source_format' => $this->input->post('source_format'),
 			'stream_id'     => $this->input->post('stream_identifier'),
 		);
 		
-		$data['source_data'] = $this->streams_import->process_to_array($data['url'], $data['source_format']);
+		$data['source_data'] = $this->streams_import->file_to_array($data['url'], $data['source_format']);
 		
 		$form = $this->streams_import->mapping_form($data['source_data'], $data['stream_id']);
 		
@@ -93,6 +93,7 @@ class Admin extends Admin_Controller
 	public function _import()
 	{
 		$data = unserialize($this->pyrocache->get('sim_quick_import'));
+		$data['page_title'] = lang('streams_import:title:profiles:quick_import_success');
 		
 		# destroy!
 		$this->pyrocache->delete('sim_quick_import');
