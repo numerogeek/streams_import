@@ -7,7 +7,10 @@
 		var $rows = $('.row_checkbox');
 		
 		// master checkbox for all rows
-		$master.bind('click',function(e){
+		$master.bind('click',function(e, preventDefault){
+			if (preventDefault) {
+				e.preventDefault();
+			}
 			if ( ! $master.is(':checked') ) {
 				$rows.removeAttr('checked');
 				$rows.parents('tr').addClass('unselected');
@@ -16,7 +19,7 @@
 				$rows.attr('checked', 'checked');
 				$rows.parents('tr').removeClass('unselected');
 			}
-		});
+		}).trigger('click', true);
 		// single checkbox disabling
 		$rows.bind('click',function(e){
 			var $row = $(this);

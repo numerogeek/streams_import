@@ -9,14 +9,14 @@
 	<table>
 		<tr>
 			<th><?php echo form_checkbox('include_all', true, true, 'id="mapping_all_checkbox" title="'.lang('streams_import:fields:include_all').'"') ?></th>
-			<th>Source</th>
-			<th>Destination</th>
+			<th class="source_col">Source</th>
+			<th class="destination_col">Destination</th>
 		</tr>
 	<?php foreach ($fields as $field) : ?>
 		<tr>
 			<td><?php echo $field['include'] ?></td>
-			<td><?php echo $field['source'] ?></td>
-			<td><?php echo $field['destination'] ?><span class="row_screen"><span class="shade"></span></span></td>
+			<td><span class="row_screen"><span class="shade"></span></span><?php echo $field['source'] ?></td>
+			<td><span class="row_screen"><span class="shade"></span></span><?php echo $field['destination'] ?></td>
 		</tr>
 	<?php endforeach; ?>
 	</table>
