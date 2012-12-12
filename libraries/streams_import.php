@@ -194,21 +194,30 @@ class Streams_import
 
 	/**
 	 * Process a source format into DB ready array
-	 * 
-	 * @param string  $format    The format name: json | csv | etc...
-	 * @param string  $raw_data  The raw data string
+	 *
+	 * @param string  $path    The URL or file path to file
+	 * @param string  $format  The format name: json | csv | etc...
 	 * @return array
 	 */
-	public function process_to_array($format, $raw_data)
+	public function process_to_array($path, $format)
 	{
+		# get the file contents
+		try {
+			$content = file_get_contents($path);
+		}
+		catch (Exception $e) {
+			show_error('We\'re having trouble getting that file. Please make sure you have entered the correct path or URL');
+		}
+		
 		// JSON
 		if ($format == 'json') {
-			$data = json_decode($raw_data, true);
+			$data = json_decode($content, true);
 		}
 		
 		// CSV
 		if ($format == 'csv') {
-			
+			$this->ci->load->library('streams_import/CSVReader', null, 'csv');
+			$data = $this->ci->csv->parse_file($path, $p_NamedFields = true, $limit = false, $_separator = ',', $_enclosure = '"');
 		}
 		
 		# Validate data or ERROR

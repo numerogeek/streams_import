@@ -74,9 +74,7 @@ class Admin extends Admin_Controller
 			'stream_id'     => $this->input->post('stream_identifier'),
 		);
 		
-		$data['raw_source_data'] = file_get_contents($data['url']);
-		
-		$data['source_data'] = $this->streams_import->process_to_array($data['source_format'], $data['raw_source_data']);
+		$data['source_data'] = $this->streams_import->process_to_array($data['url'], $data['source_format']);
 		
 		$form = $this->streams_import->mapping_form($data['source_data'], $data['stream_id']);
 		
