@@ -210,6 +210,160 @@ class Module_Streams_import extends Module
 			$this->streams->fields->add_field($field);
 		}
 
+		$field_slug = "unzip";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'choice',
+				'extra'			  => array(
+						'choice_type'=> 'dropdown',
+						'choice_data'=>	"0 : No \n ".
+										"1 : Yes",
+						'default_value'=>'0'
+
+					),
+				'assign'          => $stream_slug,
+				'instructions'	  => 'lang:' . $this->module_name . ':fields:' . $field_slug.'_instructions',
+				'title_column'    => false,
+				'required'        => true,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
+		$field_slug = "datasource";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'choice',
+				'extra'			  => array(
+						'choice_type'=> 'dropdown',
+						'choice_data'=>	"0 : File \n ".
+										"1 : URL \n ".
+										"2 : FTP",
+						'default_value'=>'0'
+
+					),
+				'assign'          => $stream_slug,
+				'instructions'	  => 'lang:' . $this->module_name . ':fields:' . $field_slug.'_instructions',
+				'title_column'    => false,
+				'required'        => true,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
+		$field_slug = "source_format";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'choice',
+				'extra'			  => array(
+						'choice_type'=> 'dropdown',
+						'choice_data'=>	"0 : XML \n ".
+										"1 : CSV/TXT \n ".
+										"2 : JSON \n ".
+										"3 : RSS ",
+						'default_value'=>'0'
+
+					),
+				'assign'          => $stream_slug,
+				'instructions'	  => 'lang:' . $this->module_name . ':fields:' . $field_slug.'_instructions',
+				'title_column'    => false,
+				'required'        => true,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
+		//STEP 2 OF PROFILE
+
+
+		$field_slug = "ftp_host";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+		
+		$field_slug = "login";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
+		$field_slug = "password";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
+		$field_slug = "url";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
 		// Add Streams - equalities
 		$stream_slug = "mapping";
 		if ( $this->streams->streams->add_stream('lang:' . $this->module_name . ':title:' . $stream_slug, $stream_slug, $this->module_name, $this->module_name . '_', null) == true )

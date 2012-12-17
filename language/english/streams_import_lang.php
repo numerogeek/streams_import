@@ -48,6 +48,18 @@ $lang = array(
 	'streams_import:fields:url_instructions'                => '',
 	'streams_import:fields:source_format'                   => 'Source Format',
 	'streams_import:fields:source_format_instructions'      => 'The format of the source data',
+	'streams_import:fields:unzip'                  			=> 'Unzip ?',
+	'streams_import:fields:unzip_instructions'      		=> 'Check if you want to unzip first.',
+	'streams_import:fields:datasource'                 		=> 'Type of the sourcefile',
+	'streams_import:fields:datasource_instructions'      	=> '',
+	'streams_import:fields:source_format'                   => 'Source Format',
+	'streams_import:fields:source_format_instructions'      => 'The format of the source data',
+	'streams_import:fields:ftp_host'						=> 'FTP Host',
+	'streams_import:fields:ftp_host_instructions'      		=> '',
+	'streams_import:fields:login'							=> 'login',
+	'streams_import:fields:login_instructions'      		=> '',
+	'streams_import:fields:password'						=> 'password',
+	'streams_import:fields:password_instructions'      		=> '',
 
 	# buttons
 	'profiles:button:add'                                   => 'Add a profile',

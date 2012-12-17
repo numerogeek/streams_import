@@ -90,14 +90,31 @@ class Admin_profiles extends Admin_Controller
 			'title'           => lang($this->namespace . ':title:' . $this->section . ':create'),
 			'success_message' => lang($this->namespace . ':messages:' . $this->section . ':create:success'),
 			'failure_message' => lang($this->namespace . ':messages:' . $this->section . ':create:error'),
-			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/mapping/-id-'
+			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/create_profile_step2/-id-'
 		);
-		$this->streams->cp->entry_form($this->section, $this->namespace, 'new', null, false, $extra);
+
+		// Skip these
+		$skip = array('ftp_host','login','password','url');
+
+		$this->streams->cp->entry_form($this->section, $this->namespace, 'new', null, false, $extra, $skip);
 
 		// Build the template 
 		$this->template->build('admin/profiles/create', $data);
 	}
 
+	public function create_profile_step2($id_profile)
+	{
+		// Processing the POST data    
+		$extra = array(
+			'title'           => lang($this->namespace . ':title:' . $this->section . ':create'),
+			'success_message' => lang($this->namespace . ':messages:' . $this->section . ':create:success'),
+			'failure_message' => lang($this->namespace . ':messages:' . $this->section . ':create:error'),
+			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/mapping/-id-'
+		);
+			$skip = array('profile_name','example_file','eol','delimiter','enclosure','stream_identifier','unzip','datasource','format');
+			$this->streams->cp->entry_form($this->section, $this->namespace, 'edit', $id_profile, true, $extra);
+
+	}
 
 	/**
 	 * Profile Mapping screen

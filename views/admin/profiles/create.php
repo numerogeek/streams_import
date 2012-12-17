@@ -33,6 +33,21 @@
 
 				<div class="input"><?php echo form_dropdown($fields->stream_identifier->field_slug, $stream_dropdown); ?></div>
 			</li>
+			<li>
+				<label for="<?php echo $fields->unzip->field_slug;?>"> <?php echo $this->fields->translate_label($fields->unzip->field_name); ?></label>
+
+				<div class="input"><?php echo $this->fields->build_form_input($fields->unzip); ?></div>
+			</li>
+			<li>
+				<label for="<?php echo $fields->datasource->field_slug;?>"> <?php echo $this->fields->translate_label($fields->datasource->field_name); ?></label>
+
+				<div class="input"><?php echo $this->fields->build_form_input($fields->datasource); ?></div>
+			</li>
+			<li>
+				<label for="<?php echo $fields->format->field_slug;?>"> <?php echo $this->fields->translate_label($fields->format->field_name); ?></label>
+
+				<div class="input"><?php echo $this->fields->build_form_input($fields->format); ?></div>
+			</li>
 		</ul>
 	</div>
 
