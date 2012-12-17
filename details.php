@@ -46,7 +46,7 @@ class Module_Streams_import extends Module
 		
 		// Make the Uploads folder and store its ID in the settings table
 		if ( ($folder = Files::create_folder(0, $this->module_name)) == true )
-			{
+			{ 
 				$folder_id = $folder['data']['id'];
 				$this->db->insert('settings', array(
 					'slug'         => $this->module_name . '_folder',
@@ -271,6 +271,106 @@ class Module_Streams_import extends Module
 			die('error');
 		}
 
+		// Add logs
+		$stream_slug = "logs";
+		if ( $this->streams->streams->add_stream('lang:' . $this->module_name . ':title:' . $stream_slug, $stream_slug, $this->module_name, $this->module_name . '_', null) == true )
+		{
+			$stream_id = $this->db->where('stream_namespace', $this->module_name)->where('stream_slug', $stream_slug)->limit(1)->get('data_streams')->row()->id;
+			$this->db->insert('settings', array(
+				'slug'         => 'sim_' . $stream_slug . '_stream_id',
+				'title'        => $this->module_name . ' ' . $stream_slug . ' stream id',
+				'description'  => $this->module_name . ' ' . $stream_slug . 'stream id holder',
+				'`default`'    => '0',
+				'`value`'      => $stream_id,
+				'type'         => 'text',
+				'`options`'    => '',
+				'is_required'  => 1,
+				'is_gui'       => 0,
+				'module'       => $this->module_name
+			));
+			$stream_id = null;
+		}
+		
+		// Add Fields profiles
+		$field_slug = "datenow";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'datetime',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => true,
+				'required'        => true,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+		
+		$field_slug = "state";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'choice',
+				'extra'           => array(
+					                     'choice_data'		=> 	"1 : In progress \n".
+					                     						"2 : Success \n".
+					                     						"3 : Error happend",
+					                     'choice_type'		=>	"dropdown",
+					                     'default_value'	=> "1"
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => true,
+				'required'        => true,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}	
+
+		$field_slug = "message";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_lenght'		=> '500'
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => true,
+				'required'        => true,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
+		$field_slug = "profile_relation_log";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'relationship',
+				'extra'           => array(
+				                       'choose_stream' => Settings::get('sim_profiles_stream_id')
+				                     ),
+				'title_column'    => false,
+				'assign'          => $stream_slug,
+				'required'        => true,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
 		return true;
 	}
 
