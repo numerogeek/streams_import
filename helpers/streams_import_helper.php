@@ -155,4 +155,35 @@ if ( !function_exists('get_current_value') )
 	}
 }
 
+if ( !function_exists('get_values_between_brackets') )
+{
+	function get_values_between_brackets($field) //return value between [] [] of a string
+	{
+		//Get the text between [] into array if there's more than 1 ! 
+			$pattern="#\[(.*?)\]#";
+			preg_match_all($pattern,$field,$matches);
+			return $matches[1];
+	}
+}
+
+if ( !function_exists('get_fileid_by_profileid') )
+{
+	function get_fileid_by_profileid($profile_id) //return value between [] [] of a string
+	{
+		$ci     =& get_instance();
+		$profile = $ci->db->select()->where('id', $profile_id)->limit(1)->get('streams_import_profiles')->row(0);
+		return $profile->example_file; 
+	}
+}
+
+if ( !function_exists('create_slug') )
+{
+	function create_slug($name)
+	{
+		$name = convert_accented_characters($name);
+
+		return strtolower(preg_replace('/-+/', '_', preg_replace('/[^a-zA-Z0-9]/', '_', $name)));
+	}
+}
+
 /* EOF */

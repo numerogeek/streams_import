@@ -58,15 +58,10 @@ class Streams_import
 	 * @param int  $file_id     The ID of the file we are importing
 	 * @return bool
 	 */
-	public function process_import($profile_id, $file_id = 0)
+	public function process_import($profile_id, $file_id)
 	{
-
-
 		// Get the file
-		if ($file_id ==0 )
-		{
-			get_fileid_by_profileid($profile_id);
-		}
+		$file = $this->ci->db->select()->where('id', $file_id)->limit(1)->get('files')->row(0);
 
 		//Get the profile
 
@@ -78,17 +73,23 @@ class Streams_import
 		$entries = $this->ci->streams->entries->get_entries($params);
 		$profile = $entries['entries'][0];
 
-		//Import helper
-		$profile_slug=create_slug($profile['profile_name']);
-		// _helper.php'
-		$this->ci->load->helper('profiles/'.$profile_slug . '_pre');
-
-
 
 		//$data = _pre_import_csv_to_stream($file->path, $profile['delimiter'], $profile['eol'], $profile['enclosure']); //helper
+		if ($profile['unzip']['key'] == '1')
+		{
+			//var_dump($profile['example_file']['filename']);
+			//we want to extract only the File needed. And we have the extension of the file because of the profile
+			$this->ci->unzip->allow(array($profile['source_format']['key']));
+			if($this->ci->unzip->extract('uploads/default/files/'.$file->filename, 'uploads/default/files/temp_unzip/'))
+			{
+				$directory_list =directory_map('uploads/default/files/temp_unzip/');
+				$file_path ='uploads/default/files/temp_unzip/'.$directory_list[0];
+			}
+		}else
+		{
+			$file=$file_id;
+		}
 
-
-		$data_array = $this->file_to_array($file_id, $profile['source_format']['key'], $profile['unzip']['key']);
 
 		// get the mapping
 		$params  = array(
@@ -99,57 +100,33 @@ class Streams_import
 		$mapping = $this->ci->streams->entries->get_entries($params);
 
 		//get the fields
-
-
 		$stream = $this->ci->streams->stream_obj($profile['stream_identifier']);
 		$fields = $this->ci->streams_m->get_stream_fields($profile['stream_identifier']);
 		//prepare the array.
 		foreach ($fields as $field)
 		{
-			$formated_fields[$field->field_id] = $field->field_slug; // ex : $formated_fields[59] = 'name'
-		}
-//var_dump($formated_fields);
-
-		//	if we work with XML and path loop is define, so we can load the node to loop
-		if ($profile['source_format']['key']=='xml' && $profile['xml_path_loop'])
-		{
-			//Get the text between [] into array if there's more than 1 ! 
-			$matches = get_values_between_brackets($profile['xml_path_loop']);
+			$formated_fields[$field->field_id] = $field->field_slug;
 		}
 
-		//we parse the array until we got the xpath as the root
-		
 
-		foreach ($matches as $key) {
-			//echo $key;			
-			$data_array = $data_array["$key"];
-		}
-
+		$total = count($data['entries']);
 		// Build the batch
-		foreach ($data_array as $entry)
+		foreach ($data['entries'] as $entry)
 		{
 			// Add..
-			/*$insert_data = array(
+			$insert_data = array(
 				'created'        => date('Y-m-d H:i:s'),
 				'created_by'     => $this->ci->current_user->id,
 				'ordering_count' => 0
-			);*/
+			);
 			foreach ($mapping['entries'] as $map)
 			{
 				$matches = get_values_between_brackets($map['entry_number']);
-				$value=$entry;
 				foreach ($matches as $key) {
-					$value = $value[$key];
+					$map['entry_number'] = $map['entry_number'][$key];
 				}
-				
-				$preprocess=$profile_slug .'_'.$map['stream_field_id'].'_sim_preprocess';
-				//$preprocess($value)
-
-				$insert_data[$map['stream_field_id']] = $value; //name_of_field_sim_pre($entry[$map['entry_number']])
+				$insert_data[$formated_fields[$map['stream_field_id']]] = $entry[$map['entry_number']];
 			}
-
-				var_dump($insert_data);
-				die();
 			$batch[] = $insert_data;
 
 		}
@@ -240,28 +217,8 @@ class Streams_import
 	 * @param string  $format  The format name: json | csv | etc...
 	 * @return array
 	 */
-	public function file_to_array($file_id, $format, $unzip='0')
+	public function file_to_array($path, $format)
 	{
-
-		// Get the file
-		$file = $this->ci->db->select()->where('id', $file_id)->limit(1)->get('files')->row(0);
-
-
-		if ($unzip == '1')
-		{
-			//get the file
-			$this->ci->unzip->allow(array($format));
-			//if($this->ci->unzip->extract('uploads/default/files/'.$file->filename, 'uploads/default/files/temp_unzip/'))
-			if($this->ci->unzip->extract('uploads/default/files/'.$file->filename, 'uploads/default/files/temp_unzip/'))
-			{
-				$directory_list	= directory_map('uploads/default/files/temp_unzip/');
-				$path		= 'uploads/default/files/temp_unzip/'.$directory_list[0];
-			}
-		}
-		else {
-
-			$path = $file->path;
-		}
 
 		# get the file contents
 		try {
@@ -331,9 +288,9 @@ class Streams_import
 			else
 			{
 				if(is_null($group)):
-				$array['['.$key.']'] = $key.'-'.$value;
+				$array[$key] = $key.'-'.$value;
 				else:
-					$array['['.$group.']['.$key.']'] = $key.'-'.$value;
+					$array[$group.'-'.$key] = $key.'-'.$value;
 				endif;
 
 			}

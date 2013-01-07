@@ -33,7 +33,15 @@ class Admin_profiles extends Admin_Controller
 	 * 
 	 * @var string
 	 */
-	public $namespace;
+	public $namespace ='streams_import';
+
+	/**
+	 * SThe directory path of the profile helper
+	 * 
+	 *  
+	 * @var string
+	 */
+	protected $helpers_dir; 
 
 
 	/**
@@ -44,12 +52,21 @@ class Admin_profiles extends Admin_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		$this->helpers_dir= ADDONPATH.'modules/streams_import/helpers/profiles';
 
 		// load everything
 		$this->load->library('streams_import');
+		$this->load->library('unzip');
+		$this->load->library('format');
+		$this->load->helper(array('folder',
+                                  'file',
+                                  'directory',
+                                  'streams_import'
+                             ));
 		
 		$this->stream_slug = $this->streams_import->stream_slug;
 		$this->namespace = $this->streams_import->namespace;
+
 	}
 
 
@@ -58,7 +75,11 @@ class Admin_profiles extends Admin_Controller
 	 */
 	public function index()
 	{
+
+
 		$profiles = $this->streams_import_m->get_profiles();
+		//var_dump($this->helpers_dir);
+		//die();
 
 		$this->template
 			->set('entries', $profiles)
@@ -74,17 +95,27 @@ class Admin_profiles extends Admin_Controller
 	 */
 	public function create()
 	{
+
+		if ( $this->input->post() )
+		{
+
+			//helpers
+			$stream = $this->input->post('stream_identifier');
+			echo $stream;
+			$slug_profile = create_slug($this->input->post('profile_name'));
+			$fieldlist=$this->get_stream_fields_list( $stream);
+            write_file($this->helpers_dir.'/' . strtolower($slug_profile) . '_pre_helper.php', '<?php ' . $this->load->view('templates/pre_process', array('fields' => $fieldlist, 'slug_profile'=>$slug_profile), true) . "\n?>");
+            
+            $stream_obj = $this->streams->stream_obj($stream);
+            
+            write_file($this->helpers_dir.'/' . strtolower($slug_profile) . '_post_helper.php', '<?php ' . $this->load->view('templates/post_process', array('stream_obj' => $stream_obj, 'slug_profile'=>$slug_profile), true) . "\n?>");
+		}
+
 		// Get stream
 		$stream       = $this->streams->stream_obj($this->stream_slug, $this->namespace);
 		$data->fields = $this->streams_m->get_stream_fields($stream->id);
 
-		$stream_list = $this->db->select("id, stream_namespace, stream_slug")->get('data_streams')->result();
-		foreach ($stream_list as $single_stream)
-		{
-			$data->stream_dropdown[$single_stream->id] = $single_stream->stream_namespace . ' - ' . $single_stream->stream_slug;
-			# code...
-		}
-
+		$data->stream_dropdown = $this->get_stream_dropdown_list();
 		// Processing the POST data    
 		$extra = array(
 			'title'           => lang($this->namespace . ':title:' . $this->section . ':create'),
@@ -94,11 +125,14 @@ class Admin_profiles extends Admin_Controller
 		);
 
 		// Skip these
-		$skip = array('ftp_host','login','password','url');
+		$skip = array('ftp_host','login','password','url','xml_path_loop');
+
 
 		$this->streams->cp->entry_form($this->section, $this->namespace, 'new', null, false, $extra, $skip);
 
+
 		// Build the template 
+		$this->template->set('page_title',lang($this->namespace . ':title:' . $this->section . ':create'));
 		$this->template->build('admin/profiles/create', $data);
 	}
 
@@ -111,8 +145,8 @@ class Admin_profiles extends Admin_Controller
 			'failure_message' => lang($this->namespace . ':messages:' . $this->section . ':create:error'),
 			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/mapping/-id-'
 		);
-			$skip = array('profile_name','example_file','eol','delimiter','enclosure','stream_identifier','unzip','datasource','format');
-			$this->streams->cp->entry_form($this->section, $this->namespace, 'edit', $id_profile, true, $extra);
+			$skip = array('profile_name','example_file','eol','delimiter','enclosure','stream_identifier','unzip','datasource','source_format','profile_slug');
+			$this->streams->cp->entry_form($this->section, $this->namespace, 'edit', $id_profile, true, $extra,$skip);
 
 	}
 
@@ -162,32 +196,45 @@ class Admin_profiles extends Admin_Controller
 		$request_entry   = $this->streams->entries->get_entries($params);
 		$current_profile = $request_entry['entries'][0];
 		//now get the stream of the profile
-		$data->fields = $this->streams_m->get_stream_fields($current_profile['stream_identifier']);
 
 
-		$data->field_count = count((array) $data->fields);
 
-		// Feed the field dropdown
-		foreach ($data->fields as $field)
-		{
-			$data->field_dropdown[$field->field_id] = $this->fields->translate_label($field->field_name);
-		}
+		$data->fields = $this->get_stream_fields_list($current_profile['stream_identifier']);
 		
-			$data->field_dropdown['id'] = 'id';
-			$data->field_dropdown['created'] = 'created';
-			$data->field_dropdown['updated'] = 'updated';
-			$data->field_dropdown['created_by'] = 'created_by';
-
+		$data->field_count = count((array) $data->fields);	
+		//var_dump($data->fields);
+		//die();
 		// Feed the entry dropdown
 		// $file_content = _pre_import_plain($current_profile['example_file']['file'],$current_profile['delimiter'],$current_profile['eol']);
 		//$handle = fopen($current_profile['example_file']['file'], 'r');
 		//$handle=stream_get_contents($handle);
-		$file_content = _pre_import_csv_to_stream($current_profile['example_file']['file'], $current_profile['delimiter'], $current_profile['eol'], $current_profile['enclosure']);
 
 
-		$data->csv_dropdown = $file_content['entries'][0];
+		//Go
+		$data_array=$this->streams_import->file_to_array(get_fileid_by_profileid($current_profile['id']), $current_profile['source_format']['key'],$current_profile['unzip']['key']);
+		
 
-		$this->template->build('admin/profiles/mapping', $data);
+		//	if we work with XML and path loop is define, so we can load the node to loop
+		if ($current_profile['source_format']['key']=='xml' && $current_profile['xml_path_loop'])
+		{
+			$matches = get_values_between_brackets($current_profile['xml_path_loop']);
+
+		}
+
+		//we parse the array until we got the xpath as the root
+		
+
+		foreach ($matches as $key) {			
+			$data_array = $data_array["$key"];
+		}
+
+		$data_array[0][null] = $this->config->item('dropdown_choose_null');
+
+
+		$data->csv_dropdown = $this->streams_import->post_process_array($data_array[0]);
+
+
+		$this->template->build('admin/profiles/mapping',$data);
 		//var_dump( $file_content);
 	}
 
@@ -207,7 +254,20 @@ class Admin_profiles extends Admin_Controller
 			'return'          => 'admin/' . $this->namespace . '/' . $this->section
 		);
 
-		echo $this->streams->cp->entry_form($this->section, $this->namespace, $mode = 'edit', $entry = $id, $view_override = true, $extra, $skips = array());
+		// Assign tabs
+		$this->_tabs = array(
+			array(
+				'title' 	=> lang($this->namespace. ':tabs:' .'general'  ),
+				'id'		=> 'recipients',
+				'fields'	=> array('profile_name','example_file','eol','delimiter','enclosure','stream_identifier','unzip','datasource','source_format'),
+				),
+			array(
+				'title' 	=> lang($this->namespace. ':tabs:' .'source_connection'  ),
+				'id'		=> 'general',
+				'fields'	=> array('ftp_host','login','password','url','xml_path_loop'),
+				));
+
+		echo $this->streams->cp->entry_form($this->section, $this->namespace, $mode = 'edit', $entry = $id, $view_override = true, $extra, $skips = array(),$this->_tabs);
 	}
 
 
@@ -253,7 +313,7 @@ class Admin_profiles extends Admin_Controller
 			redirect('admin/' . $this->namespace . '/' . $this->section);
 		}
 
-		$files = $this->db->select('id, name')->where_in('extension', array('.csv', '.txt', '.xml'))->get('files');
+		$files = $this->db->select('id, name')->where_in('extension', array('.csv', '.txt', '.xml', '.zip'))->get('files');
 		// Choose a file
 		foreach ($files->result() as $row)
 		{
@@ -265,6 +325,56 @@ class Admin_profiles extends Admin_Controller
 
 		$this->template->build('admin/choose_csv', $data);
 	}
+
+		/**
+	 * Create a dropdown array that can be used
+	 * to choose an appropriate stream. These are
+	 * separated by namespace.
+	 *
+	 * @access 	private
+	 * @return 	array
+	 */
+	private function get_stream_dropdown_list()
+	{
+		$choices = array();
+
+		// Now get our streams and add them
+		// under their namespace
+		$streams = $this->db
+							->where('stream_namespace !=', 'users')
+							->select('id, stream_name, stream_namespace')->get(STREAMS_TABLE)->result();
+		
+		foreach ($streams as $stream)
+		{
+			if ($stream->stream_namespace)
+			{
+				$choices[ucfirst($stream->stream_namespace)][$stream->id] = $stream->stream_name;
+			}
+		}
+
+		return $choices;
+	}
+
+	private function get_stream_fields_list($stream_id)
+	{
+		$fields = $this->streams_m->get_stream_fields($stream_id);
+		// Feed the field dropdown
+		foreach ($fields as $field)
+		{
+			$fieldlist[$field->field_slug] = $this->fields->translate_label($field->field_name);
+		}
+		$fieldlist['id'] = 'id';
+		$fieldlist['created'] = 'created';
+		$fieldlist['updated'] = 'updated';
+		$fieldlist['created_by'] = 'created_by';
+		$fieldlist['ordering_count'] = 'ordering_count';
+		$fieldlist[null] = $this->config->item('dropdown_choose_null');
+
+		return $fieldlist;
+	}
+
+
+
 
 
 }

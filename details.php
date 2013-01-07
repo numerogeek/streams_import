@@ -30,7 +30,7 @@ class Module_Streams_import extends Module
 			'backend'     => true,
 			'plugin'      => true,
 			'events'      => true,
-			'menu'        => 'utilities',
+			'menu'        => 'content',
 			'sections'    => array(
 				'profiles' => array(
 					'name'      => $this->module_name . ':title:profiles:index',
@@ -76,6 +76,8 @@ class Module_Streams_import extends Module
 				));
 			}
 
+
+
 		// Add Streams - profiles
 		$stream_slug = "profiles";
 		if ( $this->streams->streams->add_stream('lang:' . $this->module_name . ':title:' . $stream_slug, $stream_slug, $this->module_name, $this->module_name . '_', null) == true )
@@ -114,7 +116,7 @@ class Module_Streams_import extends Module
 				'unique'          => false
 			);
 			$this->streams->fields->add_field($field);
-		}
+		}		
 
 		$field_slug = "example_file";
 		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
@@ -124,7 +126,8 @@ class Module_Streams_import extends Module
 				'slug'            => $field_slug,
 				'namespace'       => $this->module_name,
 				'type'            => 'file',
-				'extra'           => array('folder' => $folder_id),
+				'extra'           => array('folder' => $folder_id,
+									'allowed_types'=>'*'),
 				'assign'          => $stream_slug,
 				'title_column'    => false,
 				'required'        => true,
@@ -269,10 +272,11 @@ class Module_Streams_import extends Module
 				'type'            => 'choice',
 				'extra'			  => array(
 						'choice_type'=> 'dropdown',
-						'choice_data'=>	"0 : XML \n ".
-										"1 : CSV/TXT \n ".
-										"2 : JSON \n ".
-										"3 : RSS ",
+						'choice_data'=>	"xml : XML \n ".
+										"csv : CSV \n ".
+										"txt : TXT \n ".
+										"json : JSON \n ".
+										"rss : RSS ",
 						'default_value'=>'0'
 
 					),
@@ -364,6 +368,26 @@ class Module_Streams_import extends Module
 			$this->streams->fields->add_field($field);
 		}
 
+		$field_slug = "xml_path_loop";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
+				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'instructions'     => 'lang:' . $this->module_name . ':fields:' . $field_slug.'_instructions',
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}
+
 		// Add Streams - equalities
 		$stream_slug = "mapping";
 		if ( $this->streams->streams->add_stream('lang:' . $this->module_name . ':title:' . $stream_slug, $stream_slug, $this->module_name, $this->module_name . '_', null) == true )
@@ -392,7 +416,10 @@ class Module_Streams_import extends Module
 				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
 				'slug'            => $field_slug,
 				'namespace'       => $this->module_name,
-				'type'            => 'integer',
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
 				'assign'          => $stream_slug,
 				'title_column'    => false,
 				'required'        => false,
@@ -408,7 +435,10 @@ class Module_Streams_import extends Module
 				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
 				'slug'            => $field_slug,
 				'namespace'       => $this->module_name,
-				'type'            => 'integer',
+				'type'            => 'text',
+				'extra'           => array(
+					                     'max_length'    => 200
+				                     ),
 				'assign'          => $stream_slug,
 				'title_column'    => false,
 				'required'        => false,

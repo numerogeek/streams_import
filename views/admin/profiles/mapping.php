@@ -1,3 +1,11 @@
+<?php
+/*echo "<pre>";
+print_r($array);
+    echo "</pre>";*/
+//    var_dump($csv_dropdown);
+//    die();
+?>
+
 <div class="one_full">
 	<section class="title">
 		<h2>Mapping</h2>
@@ -14,7 +22,7 @@
 			<?php
 			for ($i = 0; $i < $field_count; $i++)
 			{
-				echo "<tr><td>" . form_dropdown("source[$i]", $csv_dropdown, get_current_value($this->uri->segment(5), $i, $mode = 2)) . "</td><td>" . form_dropdown("destination[$i]", $field_dropdown, get_current_value($this->uri->segment(5), $i, $mode = 1)) . "</td></tr>";
+				echo "<tr><td>" . form_dropdown("source[$i]", $csv_dropdown, get_current_value($this->uri->segment(5), $i, $mode = 2)) . "</td><td>" . form_dropdown("destination[$i]", $fields, get_current_value($this->uri->segment(5), $i, $mode = 1)) . "</td></tr>";
 			}
 			?>
 		</table>

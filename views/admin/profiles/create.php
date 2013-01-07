@@ -1,13 +1,18 @@
+<section class="title">
+	<h4><?php echo $page_title; ?></h4>
+</section>
 <section class="item">
-	<?php echo form_open_multipart(uri_string(), 'class="streams_form"');	?>
+	<?php 
+	echo validation_errors();
+	 echo form_open_multipart(uri_string(), 'class="crud"');	?>
 	<div class="form_inputs">
-
 		<ul>
 			<li>
 				<label for="<?php echo $fields->profile_name->field_slug;?>"> <?php echo $this->fields->translate_label($fields->profile_name->field_name); ?></label>
 
 				<div class="input"><?php echo $this->fields->build_form_input($fields->profile_name); ?></div>
 			</li>
+			
 			<li>
 				<label for="<?php echo $fields->example_file->field_slug;?>"> <?php echo $this->fields->translate_label($fields->example_file->field_name); ?></label>
 
@@ -44,9 +49,9 @@
 				<div class="input"><?php echo $this->fields->build_form_input($fields->datasource); ?></div>
 			</li>
 			<li>
-				<label for="<?php echo $fields->format->field_slug;?>"> <?php echo $this->fields->translate_label($fields->format->field_name); ?></label>
+				<label for="<?php echo $fields->source_format->field_slug;?>"> <?php echo $this->fields->translate_label($fields->source_format->field_name); ?></label>
 
-				<div class="input"><?php echo $this->fields->build_form_input($fields->format); ?></div>
+				<div class="input"><?php echo $this->fields->build_form_input($fields->source_format); ?></div>
 			</li>
 		</ul>
 	</div>
@@ -54,7 +59,7 @@
 
 	<div class="float-right buttons">
 		<button type="submit" name="btnAction" value="save" class="btn blue">
-			<span><?php echo lang('buttons.save'); ?></span></button>
+			<span><?php echo lang('streams_import:button:save'); ?></span></button>
 	</div>
 
 	<?php echo form_close();?>

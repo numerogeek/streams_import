@@ -52,8 +52,6 @@ $lang = array(
 	'streams_import:fields:unzip_instructions'      		=> 'Check if you want to unzip first.',
 	'streams_import:fields:datasource'                 		=> 'Type of the sourcefile',
 	'streams_import:fields:datasource_instructions'      	=> '',
-	'streams_import:fields:source_format'                   => 'Source Format',
-	'streams_import:fields:source_format_instructions'      => 'The format of the source data',
 	'streams_import:fields:ftp_host'						=> 'FTP Host',
 	'streams_import:fields:ftp_host_instructions'      		=> '',
 	'streams_import:fields:login'							=> 'login',
@@ -69,6 +67,10 @@ $lang = array(
 	'streams_import:button:save'                            => 'Save',
 	'streams_import:button:run'                             => 'Run !',
 	'streams_import:button_next'                            => 'Next',
+
+	#tabs
+	'streams_import:tabs:source_connection'                  => 'Source du fichier',
+	'streams_import:tabs:general'                            => 'General',
 
 	# misc.
 	'streams_import:title_import_csv'                       => 'Run import.',
