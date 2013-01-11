@@ -47,7 +47,7 @@ class Streams_import
 		$this->ci->load->helper('streams_import');
 		$this->ci->lang->load('streams_import');
 		$this->ci->load->library(array('streams','form_validation', 'streams_core/Fields','format','unzip','format'));
-		$this->ci->load->model(array('streams_core/streams_m','streams_import/streams_import_m'));
+		$this->ci->load->model(array('streams_core/streams_m','streams_core/row_m','streams_import/streams_import_m'));
 	}
 
 
@@ -139,14 +139,22 @@ class Streams_import
 				$matches = get_values_between_brackets($map['entry_number']);
 				$value=$entry;
 				foreach ($matches as $key) {
+					if (!empty($key)): 
 					$value = $value[$key];
+					else:
+					//if the matches is null then there is no value.
+					$value = null;
+					endif;	
 				}
 				
 				$preprocess=$profile_slug .'_'.$map['stream_field_id'].'_sim_preprocess';
 				//$preprocess($value)
+				//jaap_file_for_my_home_stream_hide_city_sim_preprocess
 
-				$insert_data[$map['stream_field_id']] = $value; //name_of_field_sim_pre($entry[$map['entry_number']])
+				$insert_data[$map['stream_field_id']] = $preprocess($value); //name_of_field_sim_pre($entry[$map['entry_number']])
 			}
+
+			$this->ci->row_m->insert_entry($insert_data, $fields, $stream, $skips = array(), $extra = array());
 
 				var_dump($insert_data);
 				die();

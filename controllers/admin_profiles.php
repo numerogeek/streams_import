@@ -160,15 +160,17 @@ class Admin_profiles extends Admin_Controller
 		if ( $this->input->post() )
 		{
 			// We delete all existing data and we will overwrite everything
-			$this->db->where('profile_relation_stream', $this->input->post('profileID'));
-			$this->db->delete('streams_import_mapping');
+			$this->db->where('profile_relation_stream', $this->input->post('profileID'))
+			->delete('streams_import_mapping');
 
 			//Go generate and save the mapping
 			$source = $this->input->post('source');
 			$dest   = $this->input->post('destination');
 			for ($i = 0; $i < $this->input->post('counter'); $i++)
 			{
-
+				if (isset($dest[$i])&&!(empty($dest[$i]))) {
+					# code...
+				
 				$insert_data[] = array(
 					'stream_field_id'         => $dest[$i],
 					'entry_number'            => $source[$i],
@@ -177,7 +179,7 @@ class Admin_profiles extends Admin_Controller
 					'created_by'              => $this->current_user->id,
 					'profile_relation_stream' => $this->input->post('profileID')
 				);
-
+				}
 				//var_dump($insert_data);
 			}
 			// Import them

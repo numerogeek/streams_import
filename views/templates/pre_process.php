@@ -2,6 +2,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <?php 
 foreach ($fields as $slug=>$field) {
+	if (isset($slug) && $slug !='')
+	{
 ?>
 if (!function_exists('<?php echo  $slug_profile.'_'.$slug; ?>_sim_preprocess'))
 {
@@ -13,5 +15,6 @@ if (!function_exists('<?php echo  $slug_profile.'_'.$slug; ?>_sim_preprocess'))
 }
 
 <?php
+	}
 }
 ?>

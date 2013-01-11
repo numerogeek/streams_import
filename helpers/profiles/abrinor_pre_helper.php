@@ -1,5 +1,9 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
+$ci =& get_instance();
+$ci->load->helper('visite_immo');
+
+
 if (!function_exists('abrinor_commercialisation_sim_preprocess'))
 {
 	function abrinor_commercialisation_sim_preprocess($commercialisation)
@@ -22,8 +26,8 @@ if (!function_exists('abrinor_city_sim_preprocess'))
 {
 	function abrinor_city_sim_preprocess($city)
 	{
-
-		return $city ;
+		$cityid = get_cityID_by_name($city);
+		return $cityid ;
 	}
 }
 
@@ -184,8 +188,8 @@ if (!function_exists('abrinor_agency_id_sim_preprocess'))
 {
 	function abrinor_agency_id_sim_preprocess($agency_id)
 	{
-
-		return $agency_id ;
+		$agencyid = get_agencyID_by_email($agency_id);
+		return $agencyid;
 	}
 }
 
@@ -242,15 +246,5 @@ if (!function_exists('abrinor_ordering_count_sim_preprocess'))
 		return $ordering_count ;
 	}
 }
-
-if (!function_exists('abrinor__sim_preprocess'))
-{
-	function abrinor__sim_preprocess($)
-	{
-
-		return $ ;
-	}
-}
-
 
 ?>
