@@ -32,7 +32,7 @@ $lang = array(
 	'streams_import:fields:profile_name'                    => 'Profile Name',
 	'streams_import:fields:profile'                         => 'Profile ID',
 	'streams_import:fields:entry_number'                    => 'Entry',
-	'streams_import:fields:stream_field_id'                 => 'Stream Field ID',
+	'streams_import:fields:stream_field'                 => 'Stream Field ID',
 	'streams_import:fields:equalities'                      => 'Associations',
 	'streams_import:fields:stream_identifier'               => 'Stream',
 	'streams_import:fields:eol'                             => 'EOL',
@@ -58,6 +58,8 @@ $lang = array(
 	'streams_import:fields:login_instructions'      		=> '',
 	'streams_import:fields:password'						=> 'password',
 	'streams_import:fields:password_instructions'      		=> '',
+	'streams_import:fields:xml_loop_path'      				=> 'Loop Path',
+	'streams_import:fields:xml_loop_path_instructions'		=> 'The file will be converted into an array. You have to provide the node where the system have to loop to import.',
 
 	# buttons
 	'profiles:button:add'                                   => 'Add a profile',
@@ -69,7 +71,7 @@ $lang = array(
 	'streams_import:button_next'                            => 'Next',
 
 	#tabs
-	'streams_import:tabs:source_connection'                  => 'Source du fichier',
+	'streams_import:tabs:source_connection'                  => 'File settings',
 	'streams_import:tabs:general'                            => 'General',
 
 	# misc.

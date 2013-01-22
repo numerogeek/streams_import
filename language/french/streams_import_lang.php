@@ -32,7 +32,7 @@ $lang = array(
 	'streams_import:fields:profile_name'                    => 'Nom du profil',
 	'streams_import:fields:profile'                         => 'Profile ID', #translate
 	'streams_import:fields:entry_number'                    => 'Entrée',
-	'streams_import:fields:stream_field_id'                 => 'Stream Field ID', #translate
+	'streams_import:fields:stream_field'                 => 'Stream Field ID', #translate
 	'streams_import:fields:equalities'                      => 'Associations', #translate
 	'streams_import:fields:stream_identifier'               => 'Stream Destination', #translate
 	'streams_import:fields:eol'                             => 'Fin de ligne',
@@ -40,7 +40,6 @@ $lang = array(
 	'streams_import:fields:delimiter:instructions'          => '',
 	'streams_import:fields:example_file'                    => 'Example File', #translate
 	'streams_import:fields:enclosure'                       => 'Enclosure', #translate
-	'streams_import:fields:delimiter:instructions'          => '',
 	'streams_import:fields:namespace_stream_slug'           => 'Concerned Namespace/Streams Slug',
 	'streams_import:fields:include_all'                     => 'Include All Fields?', #translate
 	'streams_import:fields:include_one'                     => 'Include This Field?', #translate
@@ -48,6 +47,18 @@ $lang = array(
 	'streams_import:fields:url_instructions'                => '',
 	'streams_import:fields:source_format'                   => 'Source Format', #translate
 	'streams_import:fields:source_format_instructions'      => 'The format of the source data', #translate
+	'streams_import:fields:unzip'                  			=> 'Unzip ?',
+	'streams_import:fields:unzip_instructions'      		=> 'Check if you want to unzip first.',
+	'streams_import:fields:datasource'                 		=> 'Type of the sourcefile',
+	'streams_import:fields:datasource_instructions'      	=> '',
+	'streams_import:fields:ftp_host'						=> 'FTP Host',
+	'streams_import:fields:ftp_host_instructions'      		=> '',
+	'streams_import:fields:login'							=> 'login',
+	'streams_import:fields:login_instructions'      		=> '',
+	'streams_import:fields:password'						=> 'password',
+	'streams_import:fields:password_instructions'      		=> '',
+	'streams_import:fields:xml_loop_path'      				=> 'Chemin de la boucle',
+	'streams_import:fields:xml_loop_path_instructions'		=> 'Le fichier sera converti en array. Indiquez le chemin du noeud sur lequel boucler pour l\'import',
 
 	# buttons
 	'profiles:button:add'                                   => 'Ajouter un profil',
@@ -57,6 +68,10 @@ $lang = array(
 	'streams_import:button:save'                            => 'Sauvegarder',
 	'streams_import:button:run'                             => 'Executer',
 	'streams_import:button_next'                            => 'Suivant',
+
+	#tabs
+	'streams_import:tabs:source_connection'                  => 'File settings',
+	'streams_import:tabs:general'                            => 'General',
 
 	# misc.
 	'streams_import:title_import_csv'                       => 'Importer un fichier',

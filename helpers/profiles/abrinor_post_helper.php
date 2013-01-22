@@ -3,9 +3,11 @@
 
 if (!function_exists('abrinor_homes_sim_postprocess'))
 {
-	function abrinor_homes_sim_postprocess($stream_id, $entry_id, $data)
+	function abrinor_homes_sim_postprocess($stream, $entry_id, $data)
 	{
+		//get the pics
 
+		var_dump($data['photos']);
 		return true; 
 	}
 }

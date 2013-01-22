@@ -76,10 +76,7 @@ class Admin_profiles extends Admin_Controller
 	public function index()
 	{
 
-
 		$profiles = $this->streams_import_m->get_profiles();
-		//var_dump($this->helpers_dir);
-		//die();
 
 		$this->template
 			->set('entries', $profiles)
@@ -101,9 +98,13 @@ class Admin_profiles extends Admin_Controller
 
 			//helpers
 			$stream = $this->input->post('stream_identifier');
-			echo $stream;
+			
 			$slug_profile = create_slug($this->input->post('profile_name'));
 			$fieldlist=$this->get_stream_fields_list( $stream);
+
+			//we create a Pre helper file and an Post helper file for the new profile. 
+			//In the pre helper, we have a specific function for each field of the stream.
+
             write_file($this->helpers_dir.'/' . strtolower($slug_profile) . '_pre_helper.php', '<?php ' . $this->load->view('templates/pre_process', array('fields' => $fieldlist, 'slug_profile'=>$slug_profile), true) . "\n?>");
             
             $stream_obj = $this->streams->stream_obj($stream);
@@ -111,11 +112,13 @@ class Admin_profiles extends Admin_Controller
             write_file($this->helpers_dir.'/' . strtolower($slug_profile) . '_post_helper.php', '<?php ' . $this->load->view('templates/post_process', array('stream_obj' => $stream_obj, 'slug_profile'=>$slug_profile), true) . "\n?>");
 		}
 
-		// Get stream
+		// Get stream 
 		$stream       = $this->streams->stream_obj($this->stream_slug, $this->namespace);
 		$data->fields = $this->streams_m->get_stream_fields($stream->id);
 
+		//we get the list of all the Streams existing in this Pyro Instance
 		$data->stream_dropdown = $this->get_stream_dropdown_list();
+
 		// Processing the POST data    
 		$extra = array(
 			'title'           => lang($this->namespace . ':title:' . $this->section . ':create'),
@@ -124,16 +127,14 @@ class Admin_profiles extends Admin_Controller
 			'return'          => 'admin/' . $this->namespace . '/' . $this->section . '/create_profile_step2/-id-'
 		);
 
-		// Skip these
+		// Skip these for now, this will be in step 2
 		$skip = array('ftp_host','login','password','url','xml_path_loop');
-
 
 		$this->streams->cp->entry_form($this->section, $this->namespace, 'new', null, false, $extra, $skip);
 
-
 		// Build the template 
-		$this->template->set('page_title',lang($this->namespace . ':title:' . $this->section . ':create'));
-		$this->template->build('admin/profiles/create', $data);
+		$this->template->set('page_title',lang($this->namespace . ':title:' . $this->section . ':create'))
+						->build('admin/profiles/create', $data);
 	}
 
 	public function create_profile_step2($id_profile)
@@ -147,7 +148,6 @@ class Admin_profiles extends Admin_Controller
 		);
 			$skip = array('profile_name','example_file','eol','delimiter','enclosure','stream_identifier','unzip','datasource','source_format','profile_slug');
 			$this->streams->cp->entry_form($this->section, $this->namespace, 'edit', $id_profile, true, $extra,$skip);
-
 	}
 
 	/**
@@ -159,20 +159,21 @@ class Admin_profiles extends Admin_Controller
 	{
 		if ( $this->input->post() )
 		{
-			// We delete all existing data and we will overwrite everything
+			// We delete all existing data for this mapping, and we will overwrite everything
 			$this->db->where('profile_relation_stream', $this->input->post('profileID'))
 			->delete('streams_import_mapping');
 
 			//Go generate and save the mapping
 			$source = $this->input->post('source');
 			$dest   = $this->input->post('destination');
+
 			for ($i = 0; $i < $this->input->post('counter'); $i++)
 			{
 				if (isset($dest[$i])&&!(empty($dest[$i]))) {
 					# code...
 				
 				$insert_data[] = array(
-					'stream_field_id'         => $dest[$i],
+					'stream_field'         => $dest[$i],
 					'entry_number'            => $source[$i],
 					'ordering_count'          => $i,
 					'created'                 => date('Y-m-d H:i:s'),
@@ -182,62 +183,44 @@ class Admin_profiles extends Admin_Controller
 				}
 				//var_dump($insert_data);
 			}
+
 			// Import them
 			batch_insert_update('streams_import_mapping', $insert_data, array('ordering_count'));
 			$this->session->set_flashdata('success', lang('streams_import:messages:mapping:save:success'));
 			redirect('/admin/streams_import/profiles');
-
-			die();
 		}
 
-		$params          = array(
-			'stream'       => $this->stream_slug,
-			'namespace'    => $this->namespace,
-			'where'        => ' id = ' . $id
-		);
-		$request_entry   = $this->streams->entries->get_entries($params);
-		$current_profile = $request_entry['entries'][0];
-		//now get the stream of the profile
+		// get the profile we're editing.
+		$current_profile   = $this->streams->entries->get_entry($id,$this->stream_slug, $this->namespace, TRUE);
 
+		//get the stream's fields we want import into
+		$data->fields = $this->get_stream_fields_list($current_profile->stream_identifier);
+		$data->field_count = count((array) $data->fields);	//number of fields we have for this stream.
 
+		//Go for the magic ! Convert the example file to a PHP array.
+		$data_array=$this->streams_import->file_to_array(get_fileid_by_profileid($current_profile->id), $current_profile->source_format['key'],$current_profile->unzip['key']);
 
-		$data->fields = $this->get_stream_fields_list($current_profile['stream_identifier']);
-		
-		$data->field_count = count((array) $data->fields);	
-		//var_dump($data->fields);
-		//die();
-		// Feed the entry dropdown
-		// $file_content = _pre_import_plain($current_profile['example_file']['file'],$current_profile['delimiter'],$current_profile['eol']);
-		//$handle = fopen($current_profile['example_file']['file'], 'r');
-		//$handle=stream_get_contents($handle);
-
-
-		//Go
-		$data_array=$this->streams_import->file_to_array(get_fileid_by_profileid($current_profile['id']), $current_profile['source_format']['key'],$current_profile['unzip']['key']);
-		
 
 		//	if we work with XML and path loop is define, so we can load the node to loop
-		if ($current_profile['source_format']['key']=='xml' && $current_profile['xml_path_loop'])
+		if ($current_profile->source_format['key']=='xml' && $current_profile->xml_path_loop)
 		{
-			$matches = get_values_between_brackets($current_profile['xml_path_loop']);
+			$matches = get_values_between_brackets($current_profile->xml_path_loop);
+
+			//we fetch the array until we got the xpath as the root
+			foreach ($matches as $key) {			
+				$data_array = $data_array["$key"];
+			}
 
 		}
 
-		//we parse the array until we got the xpath as the root
-		
-
-		foreach ($matches as $key) {			
-			$data_array = $data_array["$key"];
-		}
-
+		//we put there the null value.
 		$data_array[0][null] = $this->config->item('dropdown_choose_null');
 
-
+		//processing the output if the array
 		$data->csv_dropdown = $this->streams_import->post_process_array($data_array[0]);
 
 
 		$this->template->build('admin/profiles/mapping',$data);
-		//var_dump( $file_content);
 	}
 
 
@@ -300,9 +283,10 @@ class Admin_profiles extends Admin_Controller
 	 */
 	public function run($profile_id)
 	{
-
+		//if we do have a file to import
 		if ( isset($_POST['file_id']) )
 		{
+			//try to run the import 
 			if ( ! $this->streams_import->process_import($profile_id, $_POST['file_id']) )
 			{
 				$this->session->set_flashdata('error', lang('streams_import:messages:import:failure'));
@@ -311,11 +295,12 @@ class Admin_profiles extends Admin_Controller
 			{
 				$this->session->set_flashdata('success', lang('streams_import:messages:import:success'));
 			}
-			
+			//well redirect to admin profiles
 			redirect('admin/' . $this->namespace . '/' . $this->section);
 		}
 
 		$files = $this->db->select('id, name')->where_in('extension', array('.csv', '.txt', '.xml', '.zip'))->get('files');
+		
 		// Choose a file
 		foreach ($files->result() as $row)
 		{

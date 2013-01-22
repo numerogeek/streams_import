@@ -38,11 +38,6 @@ class Module_Streams_import extends Module
 				)
 			),
 			'shortcuts' => array(
-				'quick_import' => array(
-					'name'   => $this->module_name.':button:quick_import',
-					'uri'    => 'admin/' . $this->module_name . '/quick_import',
-					'class'  => 'add'
-				),
 				'customers:add' => array(
 					'name'   => 'profiles:button:add',
 					'uri'    => 'admin/' . $this->module_name . '/profiles/create',
@@ -409,7 +404,7 @@ class Module_Streams_import extends Module
 		}
 
 		// Add Fields equalities
-		$field_slug = "stream_field_id";
+		$field_slug = "stream_field";
 		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
 		{
 			$field = array(

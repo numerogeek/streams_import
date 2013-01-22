@@ -162,7 +162,7 @@ if (!function_exists('abrinor_test_folder_sim_preprocess'))
 	function abrinor_test_folder_sim_preprocess($test_folder)
 	{
 
-		return $test_folder ;
+		return '--NONE--' ;
 	}
 }
 
