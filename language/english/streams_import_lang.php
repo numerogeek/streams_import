@@ -7,6 +7,10 @@
  * @author   PyroCMS Community
  * @website  https://github.com/bergeo-fr/streams_import
  */
+ 
+// CodeIgniter Reference Object
+$ci = &get_instance();
+
 $lang = array(
 	# titles
 	'streams_import:title:profiles:index'                   => 'Profiles',
@@ -15,6 +19,7 @@ $lang = array(
 	'streams_import:title:profiles:quick_import'            => 'Quick Import',
 	'streams_import:title:profiles:quick_import_mapping'    => 'Quick Import: Mapping',
 	'streams_import:title:profiles:quick_import_success'    => 'Quick Import: Success',
+	'streams_import:title:logs:index'			=> 'Logs',
 
 	# messages
 	'streams_import:messages:profiles:create:success'       => 'New profile created with success.',
