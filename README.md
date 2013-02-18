@@ -1,31 +1,33 @@
-# Stream importer Module
+# Streams Import Module
 ==============
 
-An awesome module to help you to import data in a stream for PyroCMS.
+An awesome module to help you to import data into Streams for PyroCMS.
 
 ## Installation
 
-Download and install the module as you make it for all the module of PyroCMS ;)
+Download and install the module through the Admin or Manually
 
-## How to use 
+## How to use
+
+### Quick Import
+
+You can choose to run a _Quick Import_ which will act as a one-time import. Simply follow the steps in the Admin to complete.
 
 ### Profiles
 
-First of all, You need to create a profile. 
-A profile contains information on the Stream you want to feed, wich type of file you are going to send, enclosures, EOL, etc...
-The profile also containe the mapping between the CSV and the Fields.
+Profiles can be used to setup a common import you will run multiple times. A Profile will store your destination Stream and field mapping to eliminate these steps in the future.
 
-The profiles is very useful if you have to import oftenly different files into one Streams.
+#### Run an import.
 
+If you have not created a profile, do so now. A Profile will contain all of the "config" type info for future imports.
 
-## Run an import.
-Once your profile is created, you can click on Run. 
-Run will propose you to select a File you've uploaded in Files Module, and will import it instantly. Because the profiles already know the type of file and the mapping.
+Once your profile is created, you can click on __Run__ which will propose you to select a File you've uploaded in Files Module, and will import it instantly.
 
 ## Improve it ! 
 
 Feel free to improve this Free and awesome module :)
 It's in beta for now, but we all need import system in our favorite CMS !
 
+## Issues
 
-
+Please submit any issues back to the Github issue tracker: <https://github.com/bergeo-fr/streams_import>

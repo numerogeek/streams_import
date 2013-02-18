@@ -1,0 +1,12 @@
+/*@ QI mapping checkboxes */
+#sim_mapping .source_col { width: 20% }
+#sim_mapping .destination_col { width: 80% }
+#sim_mapping tr .row_checkbox { position: relative; z-index: 2 }
+#sim_mapping tr .row_screen { display: none }
+#sim_mapping tr.unselected .row_screen { display: block; position: relative; }
+#sim_mapping tr.unselected .shade { display: block; height: 20px; padding: 10px; width: 100%; opacity: .7; filter:alpha(opacity=70%); position: absolute; top: -10px; left: -10px; background: white; z-index: 1 }
+
+/*@ QI success page */
+#sim_success .row_sep { background: #ccc; text-align: center }
+#sim_success .key { text-align: right; vertical-align: top; }
+#sim_success .preformatted { white-space: pre-wrap; }
