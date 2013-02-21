@@ -15,7 +15,12 @@ class Events_Streams_import {
 	public function __construct()
 	{
 		$this->CI =& get_instance();
-		
+
+		// Load up our classes
+		$this->CI->load->driver('Streams');
+		$this->CI->load->helper(array('common_import','streams_import/streams_import'));
+		$this->CI->load->config('streams_import/streams_import_c');
+
 		// Register CRON module shtuff
 		Events::register('cron_process_test', array($this, 'import_pics'));		// cron/test
 		Events::register('cron_process_test', array($this, 'import'));		// cron/test
@@ -34,12 +39,14 @@ class Events_Streams_import {
 	public function import_pics()
 	{
 
-		$this->CI->load->helper('streams_import/streams_import');
-		$query=$this->CI->db->get_where('files', array('is_downloaded' => 0), $limit=10, $offset=0); //DL 10 files a time
+		$query=$this->CI->db->get_where('files', array('is_downloaded' => 0), $limit=50, $offset=0); //DL 10 files a time
 
 		//donwload them all
 		foreach ($query->result() as $single_file) {
 				$raw = file_get_contents($single_file->src);
+				if ($raw)
+				{
+				
 				$full_path="uploads/default/files/$single_file->filename";
 				write_file($full_path, $raw);
 				
@@ -57,6 +64,10 @@ class Events_Streams_import {
 					);
 					$this->CI->db->where('id',$single_file->id);				
 					$this->CI->db->update('files',$query);
+				}else{					
+					echo "src :".$single_file->src;
+					echo "<br/> no downloadé <br/>";
+				}
 
 
 		}			
@@ -68,10 +79,25 @@ class Events_Streams_import {
 	public function import()
 	{
 
-		// Load up our classes
-		$this->CI->load->driver('Streams');
-		$this->CI->load->helper('common_import');
-		$this->CI->load->config('streams_import/streams_import_c');
+		//Steps for automatic import
+		// 0- Purge
+		// 1- check in the config the path for the profiles.
+		// 2- Load all the profiles where "auto = true"
+		// 3- check if a file is awaiting for import process
+		// 4- Import it :)  
+
+
+
+		//Purge
+
+		$sql =" SELECT id FROM default_listing_homes WHERE (updated is null and (TO_DAYS(NOW()) - TO_DAYS(created)) > 30 ) OR ( (TO_DAYS(NOW()) - TO_DAYS(updated)) >30 ) LIMIT 60"; 
+		echo $sql;
+		$entries = $this->CI->db->query($sql)->result();
+		foreach ($entries as $entry) {
+			$this->CI->streams->entries->delete_entry($entry->id, 'homes', 'listing');
+		}
+
+die();
 
 
 		/*

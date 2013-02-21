@@ -74,12 +74,10 @@ class Streams_import
 		$log_id= $this->register_logs($file_id, $profile_id);
 
 		$profile = $this->ci->streams_import_m->get_profile_object($profile_id);
-		//Import helper
-		$profile_slug=create_slug($profile->profile_name);
 		
 		// _helper.php' Preproccess and post process
-		$this->ci->load->helper('profiles/'.$profile_slug . '_pre');
-		$this->ci->load->helper('profiles/'.$profile_slug . '_post');
+		$this->ci->load->helper('profiles/'.$profile->profile_slug . '_pre');
+		$this->ci->load->helper('profiles/'.$profile->profile_slug . '_post');
 
 
 		$data_array = $this->file_to_array($file_id, $profile);
@@ -105,12 +103,18 @@ class Streams_import
 		foreach ($fields as $field)
 		{
 			$formated_fields[$field->field_id] = $field->field_slug; // ex : $formated_fields[59] = 'name'
-		}
+			//we save the folder field type because the update will be screwed if we don't unset it in the entry_data
+			if($field->field_type == 'folder')
+			{
+				$fields_folder[]=$field->field_slug;
+			}
+	}
 		
 		
 		
 
 		// Soemtimes, the entries are not in the root of the array. You can deal with it in editing the profil and adding the path to the entries where we shoudl loop
+
 
 		if ($profile->xml_path_loop)
 		{
@@ -123,7 +127,6 @@ class Streams_import
 				$data_array = $data_array["$key"];
 			}
 		}
-
 
 
 		// Detect and get the top level of our data_array => DOESNT WORK.
@@ -140,23 +143,52 @@ class Streams_import
 			{
 
 				// Build the function name
-				$preprocess=$profile_slug .'_'.$map['stream_field'].'_sim_preprocess';
+				$preprocess=$profile->profile_slug .'_'.$map['stream_field'].'_sim_preprocess';
 				
 				// Process the value
-				//if the entry_number is 'preprocess' then we call the preprocessor with null because nodata is passed out and they should be hardcoded
-				$processed_value = ($map['entry_number']!='preprocess')?$preprocess($entry[$map['entry_number']]):$preprocess(null);
+				//if the entry_number is 'preprocess' then we call the preprocessor with the full entry set because nodata is passed out and they should be hardcoded
+				$processed_value = ($map['entry_number']!='preprocess')?$preprocess($entry[$map['entry_number']]):$preprocess($entry);
 				$insert_data[$map['stream_field']] = (empty($processed_value))?null:$processed_value;
 
 				// Debug
 				//print_r($insert_data);die;
 			}
-			if (($entry_id = $this->ci->streams->entries->insert_entry($insert_data, $stream->stream_slug, $stream->stream_namespace, $skips = array(), $extra = array())) === false)
+
+			//Ok now : INSERT OR UPDATE ? 
+			//Check if the profile fields "unique_keys" is setted up
+			if(!empty($profile->unique_keys))
+			{
+				//Oh... so you want to update ? explode the keys ! 
+				$keys = explode(',', str_replace(' ', '', $profile->unique_keys));
+				foreach ($keys as $key) {
+					# code...
+					$this->ci->db->where($key,$insert_data[$key]);
+				}
+
+				$update = $this->ci->db->limit(1)->get($stream->stream_namespace.'_'.$stream->stream_slug)->row();
+			}
+
+
+			if(!empty($update->id))
+			{
+				 $skips = array();
+				//unset the folder fields.
+				foreach ($fields_folder as $slug) {
+					# code...
+					unset($insert_data[$slug]);
+					$skips[] = $slug;
+				}
+				//var_dump($insert_data);
+
+				$this->ci->streams->entries->update_entry($update->id,$insert_data, $stream->stream_slug, $stream->stream_namespace,$skips, $extra = array());
+			}
+			elseif (($entry_id = $this->ci->streams->entries->insert_entry($insert_data, $stream->stream_slug, $stream->stream_namespace, $skips = array(), $extra = array())) === false)
 			{
 				continue;
 			}
 
 			//call the post process function
-			$post_process=$profile_slug .'_'.$stream->stream_slug.'_'.'sim_postprocess';
+			$post_process=$profile->profile_slug .'_'.$stream->stream_slug.'_'.'sim_postprocess';
 			
 			$post_process($stream, $entry_id, $entry);
 			//die();
@@ -318,7 +350,7 @@ class Streams_import
 				   and isset($evaluate[2]) and is_array($evaluate[2])
 				)
 			{
-				return $this->post_process_array($value,$key, &$array);
+				return $this->post_process_array($value,$key, $array);
 			}
 			else
 			{

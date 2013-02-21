@@ -7,19 +7,14 @@
  * @author   PyroCMS Community
  * @website  https://github.com/bergeo-fr/streams_import
  */
- 
-// CodeIgniter Reference Object
-$ci = &get_instance();
-
+$ci =& get_instance();
 $lang = array(
 	# titles
 	'streams_import:title:profiles:index'                   => 'Profiles',
 	'streams_import:title:profiles:create'                  => 'Create a new profile',
 	'streams_import:title:profiles:edit'                    => 'Edit the profile',
-	'streams_import:title:profiles:quick_import'            => 'Quick Import',
-	'streams_import:title:profiles:quick_import_mapping'    => 'Quick Import: Mapping',
+	'streams_import:title:logs:index'               	  	=> 'Logs',
 	'streams_import:title:profiles:quick_import_success'    => 'Quick Import: Success',
-	'streams_import:title:logs:index'			=> 'Logs',
 
 	# messages
 	'streams_import:messages:profiles:create:success'       => 'New profile created with success.',
@@ -32,12 +27,14 @@ $lang = array(
 	'streams_import:messages:import:failure'                => 'Import fail. Sorry about that :(',
 	'streams_import:messages:mapping:save:success'          => 'Mapping saved',
 	'streams_import:messages:mapping:save:failure'          => 'Mapping Failed',
+	'streams_import:messages:logs:delete:success'          	=> 'Logs deleted succesfully',
+	'streams_import:messages:logs:delete:failure'          	=> 'Logs could not be deleted succesfully',
 
 	# fields
 	'streams_import:fields:profile_name'                    => 'Profile Name',
 	'streams_import:fields:profile'                         => 'Profile ID',
 	'streams_import:fields:entry_number'                    => 'Entry',
-	'streams_import:fields:stream_field'                 => 'Stream Field ID',
+	'streams_import:fields:stream_field'                	 => 'Stream Field ID',
 	'streams_import:fields:equalities'                      => 'Associations',
 	'streams_import:fields:stream_identifier'               => 'Stream',
 	'streams_import:fields:eol'                             => 'EOL',
@@ -65,6 +62,9 @@ $lang = array(
 	'streams_import:fields:password_instructions'      		=> '',
 	'streams_import:fields:xml_path_loop'      				=> 'Loop Path',
 	'streams_import:fields:xml_path_loop_instructions'		=> 'The file will be converted into an array. You have to provide the node where the system have to loop to import. <a  onClick="window.open(\'/admin/streams_import/profiles/raw_data/'.$ci->uri->segment(5).'\', \'NOM\', \'scrollbars=yes,width=550,height=600\')"target=\'_blank\'>See the raw data</a>',
+	'streams_import:fields:filename'						=> 'File\'s name/ID',
+	'streams_import:fields:profile_rel_logs'				=> 'Profile',
+	'streams_import:fields:profile_slug'					=> 'Profile Slug',
 
 	# buttons
 	'profiles:button:add'                                   => 'Add a profile',

@@ -261,7 +261,7 @@ class Admin_profiles extends Admin_Controller
 			array(
 				'title' 	=> lang($this->namespace. ':tabs:' .'source_connection'  ),
 				'id'		=> 'general',
-				'fields'	=> array('xml_path_loop'),
+				'fields'	=> array('xml_path_loop','unique_keys'),
 				));
 
 		echo $this->streams->cp->entry_form($this->section, $this->namespace, $mode = 'edit', $entry = $id, $view_override = true, $extra, $skips = array(),$this->_tabs);

@@ -12,7 +12,7 @@
 class Module_Streams_import extends Module
 {
 
-	public $version = 0.6;
+	public $version = 0.7;
 	public $module_name = 'streams_import';
 
 
@@ -326,6 +326,25 @@ class Module_Streams_import extends Module
 			);
 			$this->streams->fields->add_field($field);
 		}
+		$field_slug = "unique_keys";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'text',
+				'extra'			  =>array(
+					"max_length"=>555,
+					"default_value"=>"" ),
+				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}	
+
 
 		// Add Streams - equalities
 		$stream_slug = "mapping";
@@ -453,7 +472,6 @@ class Module_Streams_import extends Module
 			$this->streams->fields->add_field($field);
 		}	
 
-		// Add Fields profiles
 		$field_slug = "filename";
 		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
 		{
@@ -468,7 +486,23 @@ class Module_Streams_import extends Module
 				'unique'          => false
 			);
 			$this->streams->fields->add_field($field);
-		}	
+		}
+
+		$field_slug = "log_detail";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'textarea',
+				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}		
 		return true;
 	}
 
