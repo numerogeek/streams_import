@@ -169,6 +169,7 @@ class Streams_import
 			}
 
 
+			$action = "INSERT "; // this is for log
 			if(!empty($update->id))
 			{
 				 $skips = array();
@@ -179,6 +180,7 @@ class Streams_import
 					$skips[] = $slug;
 				}
 				//var_dump($insert_data);
+				$action = "UPDATE "; // this is for log
 
 				$this->ci->streams->entries->update_entry($update->id,$insert_data, $stream->stream_slug, $stream->stream_namespace,$skips, $extra = array());
 			}
@@ -186,6 +188,14 @@ class Streams_import
 			{
 				continue;
 			}
+
+			//Log that shit.
+			$data_log = array();
+			foreach($insert_data as $key=>$value) {
+			  $data_log[] = $key.','.$value;
+			}
+			;
+			$this->enrich_log($log_id,$action.implode('|',$data_log));
 
 			//call the post process function
 			$post_process=$profile->profile_slug .'_'.$stream->stream_slug.'_'.'sim_postprocess';
@@ -435,6 +445,18 @@ class Streams_import
 			);
 		return $this->ci->streams->entries->insert_entry($entry_data, 'logs', 'streams_import', $skips = array(), $extra = array());
 		}
+
+	}
+
+	public function enrich_log($id,$content){
+
+		$log = $this->ci->db->get_where('streams_import_logs', array('id'=>$id))->row();
+		$entry_data = array(
+			'log_detail'			=>  $log->log_detail.br(2).$content
+			);
+		$skips = array('filename','profile_rel_logs');
+		return $this->ci->streams->entries->update_entry($id, $entry_data = array(), 'logs', 'streams_import',$skips, $extra = array());
+		
 
 	}
 

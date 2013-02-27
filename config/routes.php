@@ -8,6 +8,7 @@
  * @website  https://github.com/bergeo-fr/streams_import
  */
 $route['streams_import/admin/profiles(/:any)?']     = 'admin_profiles$1';
+$route['streams_import/admin/logs(/:num)?']         = 'admin_logs/index/$1';
 $route['streams_import/admin/logs(/:any)?']         = 'admin_logs$1';
 $route['streams_import/admin(/:any)?'] 				= 'admin_profiles$1';
 

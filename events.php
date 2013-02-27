@@ -75,12 +75,24 @@ class Events_Streams_import {
 	}
 
 
+	public function purge()
+	{
+
+
+		//Purge
+		//SELECT listings older than 30 days (updated OR created.) Limit it. It's really slow. maximum should be 50
+		$sql =" SELECT id FROM default_listing_homes WHERE (updated is null and (TO_DAYS(NOW()) - TO_DAYS(created)) > 30 ) OR ( (TO_DAYS(NOW()) - TO_DAYS(updated)) >30 ) LIMIT 10"; 
+
+		$entries = $this->CI->db->query($sql)->result();
+		foreach ($entries as $entry) {
+			$this->CI->streams->entries->delete_entry($entry->id, 'homes', 'listing');
+		}
+	}
 
 	public function import()
 	{
-
+die();
 		//Steps for automatic import
-		// 0- Purge
 		// 1- check in the config the path for the profiles.
 		// 2- Load all the profiles where "auto = true"
 		// 3- check if a file is awaiting for import process
@@ -88,24 +100,17 @@ class Events_Streams_import {
 
 
 
-		//Purge
 
-		$sql =" SELECT id FROM default_listing_homes WHERE (updated is null and (TO_DAYS(NOW()) - TO_DAYS(created)) > 30 ) OR ( (TO_DAYS(NOW()) - TO_DAYS(updated)) >30 ) LIMIT 60"; 
-		echo $sql;
-		$entries = $this->CI->db->query($sql)->result();
-		foreach ($entries as $entry) {
-			$this->CI->streams->entries->delete_entry($entry->id, 'homes', 'listing');
-		}
 
-die();
 
 
 		/*
 		* Set up our root directory to scan
 		*/
 
-		$base = UPLOAD_PATH.'ftp/profiles/';
+		$base = $this->CI->config->item('streams_import:profiles_directory');
 
+		$exit_at_the_end = false;
 
 
 		/*
@@ -116,19 +121,9 @@ die();
 		$profiles = $this->CI->streams->entries->get_entries(
 			array(
 				'stream' => 'profiles',
-				'namespace' => 'streams_import',
+				'namespace' => 'streams_import'
 				)
 			);
-
-		foreach ($profiles['entries'] as &$profile)
-		{
-			$profile = array(
-				'slug' => slugify($profile['profile_name'], ''),
-				'id' => $profile['id'],
-				);
-		}
-
-
 
 		/*
 		 * Scan
@@ -136,9 +131,10 @@ die();
 
 		foreach ($profiles['entries'] as $profile)
 		{
-			$path = $base.$profile['slug'];
+			$path = $base.$profile['profile_slug'].'/data/';
 
 
+var_dump($path);
 			// Does the folder exist?
 			if (is_dir($path))
 			{
@@ -160,16 +156,23 @@ die();
 
 
 				// Check for the achive folder
-				if (!is_dir($path.'/archive')) mkdir($path.'/archive');
+				$archive = $this->CI->config->item('streams_import:archives_folder').$profile['profile_slug'];
+
+				
+				if (!is_dir($this->CI->config->item('streams_import:archives_folder')))
+					{ mkdir($this->CI->config->item('streams_import:archives_folder')); }				
+				if (!is_dir($archive))
+					{ mkdir($archive); }
 
 
 				// Move the files to archive
 				foreach ($files as $file)
 				{
-
+					$exit_at_the_end = true;
 					// Try importing the file
-					if(import_file($path.'/'.$file,$file,$folder_id = 18,$owner = 17,$description = ''))	// $folder_id = 18 is "import" and $owner = 17 is "service@aiwebsystems.com"
+					if(import_file($path.$file,$file,$folder_id = 18,$owner = 17,$description = 'file to import'))	// $folder_id = 18 is "import" and $owner = 17 is "service@aiwebsystems.com"
 					{
+						//echo "success ".$path.$file;
 						##
 						## There needs to be a public import method
 						##
@@ -177,22 +180,31 @@ die();
 						##
 
 						// File ID
-						$file = $this->CI->db->select()->where('filename', $file)->limit(1)->get('files')->row(0);
+						$file_id = $this->CI->db->select()->where('filename', $file)->limit(1)->get('files')->row(0);
 
 						// Try this
-						echo file_get_contents(site_url('streams_import/import/'.$this->CI->config->item('streams_import:hash').'/'.$profile['id'].'/'.$file->id));die;
+						$hit = site_url('streams_import/import/'.$this->CI->config->item('streams_import:hash').'/'.$profile['id'].'/'.$file_id->id);
+						//var_dump($hit);
+						echo file_get_contents($hit);
 						//echo site_url('streams_import/import/'.$this->CI->config->item('streams_import:hash').'/'.$profile['id'].'/'.$file->id);die;
 
 						// Clean that snatch like a dirty carpet
-						rename($path.'/'.$file, $path.'/archive/'.now().'.'.$file);
+
+						rename($path.$file, $archive.'/'.now().'.'.$file);
 					}
+				}
+				if ($exit_at_the_end)
+				{
+					//We want to process one profile per time.
+					die();
 				}
 			}
 			else
 			{
+				//echo "ano";
 				// Who knows?
 				// Maybe we'll need it next time.
-				mkdir($path);
+				rename($path.$file, $archive.'/'.$file);
 			}
 		}
 	}

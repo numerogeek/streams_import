@@ -41,19 +41,24 @@ class Admin_logs extends Admin_Controller
 
 	}
 
-    public function index()
+    public function index($offset)
     {
         $extra = 
          array(
          'title'                => lang($this->namespace.':title:'.$this->section.':index'),
          'buttons' => array(
-	        array(
-	            'label'     => lang('global:delete'),
-	            'url'       => 'admin/'.$this->namespace.'/'.$this->section.'/delete/-entry_id-',
-	            'confirm'   => true
-	        ))
+            array(
+                'label'     => lang('global:delete'),
+                'url'       => 'admin/'.$this->namespace.'/'.$this->section.'/delete/-entry_id-',
+                'confirm'   => true
+            ),
+            array(
+                'label'     => lang('global:view'),
+                'url'       => 'admin/'.$this->namespace.'/'.$this->section.'/view/-entry_id-',
+                'confirm'   => false
+            ))
          );
-         echo $this->streams->cp->entries_table($this->section, $this->namespace, $pagination = null, $pagination_uri = null, $view_override = true, $extra);
+         echo $this->streams->cp->entries_table($this->section, $this->namespace, $pagination = "50", $pagination_uri = "admin/streams_import/logs", $view_override = true, $extra);
     }
 
     public function create()
@@ -67,6 +72,15 @@ class Admin_logs extends Admin_Controller
     	//we won't edit logs manually ! 
         redirect('admin/'.$this->namespace.'/'.$this->section);
     }
+
+    public function view ($id)
+    {
+        $query = $this->streams->entries->get_entry($id,$this->section, $this->namespace,false);
+
+        echo "<pre>";
+        var_dump($query);
+    }
+
 
     public function delete($id)
     {
