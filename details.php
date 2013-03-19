@@ -12,7 +12,7 @@
 class Module_Streams_import extends Module
 {
 
-	public $version = 0.7;
+	public $version = 0.9;
 	public $module_name = 'streams_import';
 
 
@@ -326,6 +326,7 @@ class Module_Streams_import extends Module
 			);
 			$this->streams->fields->add_field($field);
 		}
+		
 		$field_slug = "unique_keys";
 		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
 		{
@@ -338,6 +339,29 @@ class Module_Streams_import extends Module
 					"max_length"=>555,
 					"default_value"=>"" ),
 				'assign'          => $stream_slug,
+				'title_column'    => false,
+				'required'        => false,
+				'unique'          => false
+			);
+			$this->streams->fields->add_field($field);
+		}		
+
+		$field_slug = "active";
+		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
+		{
+			$field = array(
+				'name'            => 'lang:' . $this->module_name . ':fields:' . $field_slug,
+				'slug'            => $field_slug,
+				'namespace'       => $this->module_name,
+				'type'            => 'choice',
+				'extra'			  => array(
+						'choice_type'=> 'dropdown',
+						'choice_data'=>	"0 : Non \n ".
+										"1 : Oui",
+						'default_value'=>'0'
+					),
+				'assign'          => $stream_slug,
+				'instructions'     => 'lang:' . $this->module_name . ':fields:' . $field_slug.'_instructions',
 				'title_column'    => false,
 				'required'        => false,
 				'unique'          => false
@@ -503,6 +527,19 @@ class Module_Streams_import extends Module
 			);
 			$this->streams->fields->add_field($field);
 		}		
+		//the lock setting
+		$this->db->insert('settings', array(
+				'slug'			=> 'stream_import_lock_info',
+				'title'			=> 'Lock info for Stream Importer Module',
+				'description'	=> 'Tell you if the stream importer is running, and the start date.',
+				'`default`'		=> '0',
+				'`value`'		=> '0',
+				'type'			=> 'text',
+				'`options`'		=> '',
+				'is_required'	=> 1,
+				'is_gui'		=> 0,
+				'module'		=> $this->module_name
+			));
 		return true;
 	}
 
@@ -525,7 +562,6 @@ class Module_Streams_import extends Module
 
 	public function upgrade($old_version)
 	{
-
 
 		return true;
 	}

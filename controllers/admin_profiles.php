@@ -375,9 +375,21 @@ class Admin_profiles extends Admin_Controller
 		return $fieldlist;
 	}
 
+	public function activation($profile_id, $activation)
+	{
+		$this->db->where('id',$profile_id );
+		$data = array("active"=>$activation);
+		$this->db->update('streams_import_profiles',$data);
+		redirect('admin/' . $this->namespace . '/' . $this->section);
+	}
 
 
-
+	
+	public function reset_lock()
+	{
+		Settings::set('stream_import_lock_info','0');
+		return true;
+	}
 
 }
 

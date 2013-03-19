@@ -35,6 +35,7 @@ class Streams_import
 	 */
 	public $namespace = 'streams_import';
 	public $temp_path;
+	public $debug;
 
 
 	/**
@@ -51,7 +52,9 @@ class Streams_import
 		$this->ci->load->model(array('streams_core/streams_m','streams_core/row_m','streams_import/streams_import_m'));
 		
 		$this->ci->load->config('streams_import_c');
+		$this->debug =  $this->ci->config->item('streams_import:debug');
         $this->temp_path = $this->ci->config->item('streams_import:unzip_folder');
+		$this->break_value = $this->ci->config->item('streams_import:break_value');
 
 	}
 
@@ -65,6 +68,9 @@ class Streams_import
 	 */
 	public function process_import($profile_id, $file_id = 0)
 	{
+		//Put the lock ON.
+		Settings::set('stream_import_lock_info', '1|'.$profile_id.'|'.$file_id.'|'.date('Y-m-d_H:i:s', now()));
+
 		// Get the file example if file_id is not set
 		if ($file_id ==0 )
 		{
@@ -108,13 +114,15 @@ class Streams_import
 			{
 				$fields_folder[]=$field->field_slug;
 			}
-	}
-		
-		
-		
+		}
 
 		// Soemtimes, the entries are not in the root of the array. You can deal with it in editing the profil and adding the path to the entries where we shoudl loop
 
+	/*	if ($this->debug):
+			echo "<pre>";
+			var_dump($data_array);
+			echo "</pre>";
+		endif;*/
 
 		if ($profile->xml_path_loop)
 		{
@@ -139,6 +147,8 @@ class Streams_import
 		// Build the batch
 		foreach ($data_array as $entry)
 		{
+			// 
+			$insert_data=array();
 			foreach ($mapping['entries'] as $map)
 			{
 
@@ -146,12 +156,32 @@ class Streams_import
 				$preprocess=$profile->profile_slug .'_'.$map['stream_field'].'_sim_preprocess';
 				
 				// Process the value
+				//if empty don't insert
+				if(empty($entry[$map['entry_number']]) and $map['entry_number']!='preprocess'):
+					 //echo $map['entry_number']; 
+					continue;
+				endif;
+
 				//if the entry_number is 'preprocess' then we call the preprocessor with the full entry set because nodata is passed out and they should be hardcoded
 				$processed_value = ($map['entry_number']!='preprocess')?$preprocess($entry[$map['entry_number']]):$preprocess($entry);
 				$insert_data[$map['stream_field']] = (empty($processed_value))?null:$processed_value;
 
 				// Debug
 				//print_r($insert_data);die;
+			}
+
+			//Log that shit.
+			$data_log = array();
+			foreach($insert_data as $key=>$value) {
+			  $data_log[] = $key.','.$value;
+			};
+
+			//if one of the data is corrupted, we do not insert anything
+			if(in_array("{{do_no_insert}}", $insert_data, $strict = TRUE))
+			{
+				//Log that shit.
+				$this->enrich_log($log_id,"INSTABLE DATA: We don't insert: ".implode('|',$data_log));
+				continue;
 			}
 
 			//Ok now : INSERT OR UPDATE ? 
@@ -184,26 +214,31 @@ class Streams_import
 
 				$this->ci->streams->entries->update_entry($update->id,$insert_data, $stream->stream_slug, $stream->stream_namespace,$skips, $extra = array());
 			}
-			elseif (($entry_id = $this->ci->streams->entries->insert_entry($insert_data, $stream->stream_slug, $stream->stream_namespace, $skips = array(), $extra = array())) === false)
+			elseif (($entry_id = $this->ci->streams->entries->insert_entry($insert_data, $stream->stream_slug, $stream->stream_namespace, $skips = array(), $extra = array())))
+			{
+				//call the post process function
+				$post_process=$profile->profile_slug .'_'.$stream->stream_slug.'_'.'sim_postprocess';
+				
+				$post_process($stream, $entry_id, $entry);
+			}else
 			{
 				continue;
 			}
-
 			//Log that shit.
-			$data_log = array();
-			foreach($insert_data as $key=>$value) {
-			  $data_log[] = $key.','.$value;
-			}
-			;
 			$this->enrich_log($log_id,$action.implode('|',$data_log));
 
-			//call the post process function
-			$post_process=$profile->profile_slug .'_'.$stream->stream_slug.'_'.'sim_postprocess';
-			
-			$post_process($stream, $entry_id, $entry);
+			//kill the variables
+			$entry = null;
+			$insert_data = null;
 			//die();
 		}
+
+		//kill the variables
+		$data_array = null;
 		$this->register_logs($file_id, $profile_id,$log_id);
+
+		//release the lock
+		Settings::set('stream_import_lock_info', '0|'.$profile_id.'|'.$file_id.'|'.date('Y-m-d_H:i:s', now()));
 		return true;
 	}
 
@@ -230,8 +265,11 @@ class Streams_import
 		//load and set the helper name 
 		$this->ci->load->helper('profiles/'.$profile->profile_slug.'_pre');
 		$decode_content = $profile->profile_slug .'_content_decode_sim_preprocess';
+		//check if ext is good before unzippin.
+		$_file_array = explode('.',$file->filename);
+		$ext = strtolower(trim($_file_array[count($_file_array)-1]));
 
-		if (strtoupper($profile->unzip) == 'YES')
+		if (strtoupper($profile->unzip) == 'YES' and $ext =='zip')
 		{
 			//first we empty the temps folder
 			delete_files($this->temp_path);
@@ -245,16 +283,19 @@ class Streams_import
 				foreach ($directory_list as $key => $value) {
 					if (strtolower(array_pop(explode('.', $value))) == strtolower($profile->source_format))
 					{
-						$path		= $this->temp_path.$value;
-
+						$path = $this->temp_path.$value;
 					}
 				}
 			}
 		}
 		else {
-
 			$path = str_replace('{{ url:site }}', site_url(), $file->path);
 		}
+
+		$path = str_replace('{{ id }}', $file->id, $path);
+		//if($this->debug) echo 'DEBUG file2array_path:'.$path.br(1);
+		
+
 		# get the file contents
 		try
 		{
@@ -270,7 +311,7 @@ class Streams_import
 		catch (Exception $e) {
 			show_error('We\'re having trouble getting that file. Please make sure you have entered the correct path or URL');
 		}
-		
+		//if($this->debug) var_dump($content);
 		// JSON
 		if ($profile->source_format == 'JSON') {
 			$data = json_decode($content, true);
@@ -301,6 +342,11 @@ class Streams_import
 			//$data = (array) simplexml_load_file($content, 'SimpleXMLElement', LIBXML_NOCDATA);	
 
 			$data_raw= $this->ci->format->factory($decode_content($content), 'xml')	;
+			/*var_dump($path);
+			var_dump($content);
+			echo "<pre>";
+			var_dump($data_raw);
+			die();*/
 			$data=$data_raw->to_array();
 
 
@@ -434,14 +480,15 @@ class Streams_import
 	{
 
 		if (!is_null($id)){
-			$skips = array('filename','profile_rel_logs');
+			$skips = array('filename','profile_rel_logs','log_detail');
 			$this->ci->streams->entries->update_entry($id, $entry_data = array(), 'logs', 'streams_import',$skips, $extra = array());
 		}
 		else{
 
 		$entry_data = array(
-			'filename'			=>	$filename,
+			'filename'			=>	$filename .'/'.$this->get_filename_by_id($filename),
 			'profile_rel_logs'		=>	$profile_id,
+			'log_detail'			=> "BEGIN ".br(1)
 			);
 		return $this->ci->streams->entries->insert_entry($entry_data, 'logs', 'streams_import', $skips = array(), $extra = array());
 		}
@@ -451,16 +498,23 @@ class Streams_import
 	public function enrich_log($id,$content){
 
 		$log = $this->ci->db->get_where('streams_import_logs', array('id'=>$id))->row();
+
 		$entry_data = array(
-			'log_detail'			=>  $log->log_detail.br(2).$content
+			'log_detail'			=>  (string)$log->log_detail.br(2).$content
 			);
 		$skips = array('filename','profile_rel_logs');
-		return $this->ci->streams->entries->update_entry($id, $entry_data = array(), 'logs', 'streams_import',$skips, $extra = array());
-		
+
+		$this->ci->streams->entries->update_entry($id, $entry_data, 'logs', 'streams_import',$skips, $extra = array());
+		return true;
 
 	}
 
-	
+	public function get_filename_by_id($id)
+	{
+		$row = $this->ci->db->where('id',$id)->get('files')->row();
+		return $row->filename;
+	}
+
 }
 
 /* EOF */

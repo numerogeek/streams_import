@@ -38,11 +38,60 @@ class Admin_logs extends Admin_Controller
 	{
 		parent::__construct();
         $this->lang->load('streams_import');
+        $this->load->library('streams_import');
 
 	}
 
     public function index($offset)
     {
+
+        $keyword = trim($this->input->post('keyword'));
+        $start_date = trim($this->input->post('start_date'));
+        $end_date = trim($this->input->post('end_date'));
+        $profile = trim($this->input->post('profile'));
+
+        (!empty($keyword))? $where[] = " ( log_detail like '%".$keyword."%' ) " : false;
+        (!empty($start_date))? $where[] = " ( created >= '".$start_date." 00:00:00' ) " : false;
+        (!empty($end_date))? $where[] = " ( created <= '".$start_date." 00:00:00' ) " : false;
+        (!empty($profile))? $where[] = " ( profile_rel_logs = ".$profile." ) " : false;
+
+
+        $where_str = (!empty($where))?implode(' AND ', $where):' created <='.date("Y-m-d").' ';
+        //Get the logs
+
+       // var_dump($where_str);
+
+
+        $params = array(
+            'namespace'=>$this->namespace,
+            'stream'    =>$this->section,
+            'where'     =>$where_str,
+            'limit'     =>'150',
+            'paginate'  =>'no',
+            'pag_segment'=>4,
+
+            );
+
+        $results = $this->streams->entries->get_entries($params);
+
+        $data->entries = $results['entries'];
+        $data->section = $this->section;
+        $data->namespace = $this->section;
+        $data->title = lang($this->namespace.':title:'.$this->section.':index');
+
+        $profiles = $this->db->select('id,profile_name')->get('streams_import_profiles');
+        $data->profiles['0'] = '----';
+        foreach ($profiles->result() as $profile) {
+            $data->profiles[$profile->id] = $profile->profile_name;
+        }
+
+        $this->template
+          ->append_js('admin/filter.js');
+
+        $this->input->is_ajax_request() ? $this->template->set_layout(false)->build('admin/'.$this->section.'/table',$data) : $this->template->build('admin/'.$this->section.'/index',$data);
+
+
+/*
         $extra = 
          array(
          'title'                => lang($this->namespace.':title:'.$this->section.':index'),
@@ -58,8 +107,9 @@ class Admin_logs extends Admin_Controller
                 'confirm'   => false
             ))
          );
-         echo $this->streams->cp->entries_table($this->section, $this->namespace, $pagination = "50", $pagination_uri = "admin/streams_import/logs", $view_override = true, $extra);
-    }
+        
+        echo $this->streams->cp->entries_table($this->section, $this->namespace, $pagination = "50", $pagination_uri = "admin/streams_import/logs", $view_override = true, $extra);
+  */  }
 
     public function create()
     {
