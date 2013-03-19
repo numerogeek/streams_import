@@ -9,10 +9,6 @@ Download and install the module through the Admin or Manually
 
 ## How to use
 
-### Quick Import
-
-You can choose to run a _Quick Import_ which will act as a one-time import. Simply follow the steps in the Admin to complete.
-
 ### Profiles
 
 Profiles can be used to setup a common import you will run multiple times. A Profile will store your destination Stream and field mapping to eliminate these steps in the future.
