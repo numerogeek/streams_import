@@ -117,6 +117,7 @@ class Module_Streams_import extends Module
 			);
 			$this->streams->fields->add_field($field);
 		}	
+		$field_slug = "profile_slug";
 		if ( $this->db->where('field_namespace', $this->module_name)->where('field_slug', $field_slug)->limit(1)->get('data_fields')->num_rows() == null )
 		{
 			$field = array(
